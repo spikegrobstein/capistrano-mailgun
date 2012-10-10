@@ -109,6 +109,13 @@ This function is only available from within the template. It will use the `git c
 configured as `:git` or use `whoami` if not. This is handy if you want to notify people of which user
 actually did the deployment.
 
+## Limitations
+
+ * Only supports plain-text emails. This should be fixed in the next release.
+ * Only supports ERB for templates. This should be changed in a future release.
+ * Simpler support for specifying templates? Should not need to pass absolute path, hopefully.
+ * Extremely limited access to Mailgun parameters. Eventually I'd like to add support for better customization of this.
+
 ## Contributing
 
 1. Fork it
