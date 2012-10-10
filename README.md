@@ -29,6 +29,8 @@ In your `Capfile`, add:
 
 To send a notification after deploy, add the following to your `deploy.rb` file:
 
+    require 'capistrano-mailgun'
+
     set :mailgun_api_key, 'key-12345678901234567890123456789012' # your mailgun API key
     set :mailgun_domain, 'example.com' # your mailgun email domain
     set :mailgun_from, 'deployment@example.com' # who the email will appear to come from
