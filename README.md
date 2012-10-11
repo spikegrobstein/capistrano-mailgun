@@ -105,9 +105,9 @@ the domain to the email addresses) as the regular `mailgun.notify_of_deploy` fun
 The template will also be executed in the context of the recipe and will have access to everything that
 capistrano has access to.
 
-### mailgun.deployer_username
+### deployer_username
 
-This function is only available from within the template. It will use the `git config user.name` if `scm` is
+This is a default capistrano variable that is defined in the gyem. It will use the `git config user.name` if `scm` is
 configured as `:git` or use `whoami` if not. This is handy if you want to notify people of which user
 actually did the deployment.
 
