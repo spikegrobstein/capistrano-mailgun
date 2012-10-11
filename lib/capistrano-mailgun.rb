@@ -42,23 +42,26 @@ module Capistrano
   end
 end
 
-Capistrano::Configuration.instance.load do
-  Capistrano.plugin :mailgun, Capistrano::Mailgun
+if Capistrano::Configuration.instance
+  Capistrano::Configuration.instance.load do
+    Capistrano.plugin :mailgun, Capistrano::Mailgun
 
-  set(:mailgun_subject) { "[Deployment] #{ application.capitalize } completed" }
+    set(:mailgun_subject) { "[Deployment] #{ application.capitalize } completed" }
 
-  set(:mailgun_api_key) { abort "Please set mailgun_api_key accordingly" }
-  set(:mailgun_domain) { abort "Please set mailgun_domain accordingly" }
-  set(:mailgun_from) { abort "Please set mailgun_from to your desired From field" }
-  set(:mailgun_recipients) { abort "Please specify mailgun_recipients" }
-  set(:mailgun_recipient_domain) { abort "Please set mailgun_recipient_domain accordingly" }
+    set(:mailgun_api_key) { abort "Please set mailgun_api_key accordingly" }
+    set(:mailgun_domain) { abort "Please set mailgun_domain accordingly" }
+    set(:mailgun_from) { abort "Please set mailgun_from to your desired From field" }
+    set(:mailgun_recipients) { abort "Please specify mailgun_recipients" }
+    set(:mailgun_recipient_domain) { abort "Please set mailgun_recipient_domain accordingly" }
 
-  set(:deployer_username) do
-    if fetch(:scm, nil).to_sym == :git
-      `git config user.name`.chomp
-    else
-      `whoami`.chomp
+    set(:deployer_username) do
+      if fetch(:scm, nil).to_sym == :git
+        `git config user.name`.chomp
+      else
+        `whoami`.chomp
+      end
     end
+
   end
 
 end
