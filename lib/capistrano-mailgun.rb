@@ -26,6 +26,14 @@ module Capistrano
       File.join( File.dirname(__FILE__), t )
     end
 
+    # who is the current deployer?
+    def deployer_username
+      if fetch(:scm, nil).to_sym == :git
+        `git config user.name`.chomp
+      else
+        `whoami`.chomp
+      end
+    end
     private
 
     # regenerates the recipients list using hte mailgun_domain for any reciients without domains
@@ -39,14 +47,6 @@ module Capistrano
       end
     end
 
-    # who is the current deployer?
-    def deployer_username
-      if fetch(:scm, nil).to_sym == :git
-        `git config user.name`.chomp
-      else
-        `whoami`.chomp
-      end
-    end
   end
 end
 
