@@ -8,7 +8,7 @@ module Capistrano
 
     # simple wrapper for sending an email with a given template
     def send_email(template, subject, recipients, from_address)
-      RestClient.post "https://api:#{ mailgun_api_key }@api.mailgun.net/v2/#{ mailgun_domain }/messages",
+      RestClient.post build_mailgun_uri( mailgun_api_key, mailgun_domain ),
         :from => from_address,
         :to => build_recipients( recipients ).join(','),
         :subject => subject,
@@ -37,6 +37,10 @@ module Capistrano
           "#{ r }@#{ mailgun_recipient_domain }"
         end
       end.uniq
+    end
+
+    def build_mailgun_uri(mailgun_api_key, mailgun_domain)
+      "https://api:#{ mailgun_api_key }@api.mailgun.net/v2/#{ mailgun_domain }/messages"
     end
 
   end
