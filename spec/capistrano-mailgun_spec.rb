@@ -30,6 +30,10 @@ describe Capistrano::Mailgun do
       build_recipients( [email_1, email_2] ).should == [email_1, email_2]
     end
 
+    it "should deduplicate emails in the recipients" do
+      build_recipients( [email_1, email_2, email_1] ).should == [email_1, email_2]
+    end
+
     context "when working with unqualified email addresses" do
       before(:all) do
         config.load do

@@ -36,7 +36,7 @@ module Capistrano
         else
           "#{ r }@#{ mailgun_recipient_domain }"
         end
-      end
+      end.uniq
     end
 
   end
