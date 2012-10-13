@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Capistrano::Mailgun do
 
-  let!(:config) do
+  let(:config) do
     Capistrano::Configuration.new
   end
 
@@ -51,6 +51,33 @@ describe Capistrano::Mailgun do
 
     end
 
+
+  end
+
+  context "#find_template" do
+
+    it "should return the path passed to it" do
+      mailgun.find_template('asdf').should == 'asdf'
+    end
+
+  end
+
+
+  context "validations" do
+
+    def should_require(var)
+      lambda do
+        config.load { fetch var }
+      end.should raise_error
+    end
+
+    it "should require mailgun_api_key" do
+      should_require :mailgun_api_key
+    end
+
+    it "should require mailgun_domain" do
+      should_require :mailgun_domain
+    end
 
   end
 
