@@ -30,7 +30,7 @@ module Capistrano
 
     # regenerates the recipients list using hte mailgun_domain for any reciients without domains
     def build_recipients(recipients)
-      recipients.map do |r|
+      [*recipients].map do |r|
         if r.match /.+?@.+?$/
           r
         else

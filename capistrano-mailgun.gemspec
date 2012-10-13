@@ -14,4 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "capistrano-mailgun"
   gem.require_paths = ["lib"]
   gem.version       = Capistrano::Mailgun::VERSION
+
+  gem.add_dependency "capistrano"
+  gem.add_dependency "rest-client"
 end
