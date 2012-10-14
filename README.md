@@ -1,4 +1,4 @@
-# Capistrano-Mailgun
+# Capistrano-Mailgun  [![Build Status](https://travis-ci.org/spikegrobstein/capistrano-mailgun.png)](https://travis-ci.org/spikegrobstein/capistrano-mailgun)
 
 *Bust a cap in your deployment notifications*
 
