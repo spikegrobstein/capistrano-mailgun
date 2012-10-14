@@ -36,10 +36,12 @@ To send a notification after deploy, add the following to your `deploy.rb` file:
     set :mailgun_from, 'deployment@example.com' # who the email will appear to come from
     set :mailgun_recipients, [ 'you@example.com', 'otherguy@example.com' ] # who will receive the email
 
-    # create an after:deploy hook
-    # pass it the path to an erb template.
     # The erb template will have visibility into all your capistrano variables.
-    after(:deploy) { mailgun.notify_of_deploy File.join(File.dirname(__FILE__), 'mail.erb') }
+    # this template will be the text body of the notification email
+    set :mailgun_text_template, File.join(File.dirname(__FILE__), 'mail.erb')
+
+    # create an after deploy hook
+    after(:deploy) { mailgun.notify_of_deploy }
 
 You should then create a `mail.erb` file in the same directory as `deploy.rb`:
 
@@ -71,6 +73,19 @@ An array of email addresses who should recieve a notification when a deployment 
 You can optionally only specify just the part of the email address before the @ and `capistrano-mailgun` will
 automatically append the `mailgun_recipient_domain` to it. See `mailgun_recipient_domain`.
 
+### mailgun_text_template (required for notify_of_deploy)
+
+This is the path to the ERB template that `Capistrano::Mailgun` will use to create the text body of
+your email. This is only required if you do not use the `mailgun_html_template` variable. You can
+specify both text and html templates and the emails will contain the proper bodies where the client
+supports it.
+
+### mailgun_html_template (required for notify_of_deploy)
+
+This is the path to the ERB template that will be used to generate the HTML body of the email. It is only
+required if you do not specify the `mailgun_text_template` variable. You can specify both text and html
+templates and emails will contain the proper bodies where the client supports it.
+
 ### mailgun_recipient_domain
 
 The domain that will be automatically appended to incomplete email addresses in the `mailgun_recipients`.
@@ -87,23 +102,32 @@ Setting this will override the default.
 
 `capistrano-mailgun` has a couple of methods to enable you to send emails easily. The following are the functions:
 
-### mailgun.notify_of_deploy(erb_path)
+### mailgun.notify_of_deploy
 
-Given a path to an erb template file, it will send an email to recipients specified using the above
-Capistrano variables.
+This is a convenience function to send an email via the Mailgun api using your Capistrano variables for
+basic configuration. It will either/or `mailgun_html_template` and `mailgun_text_template` to generate the 
+email body, `mailgun_recipients` for who to address the email to, `mailgun_from` for the reply-to field
+of the email and `mailgun_subject` for the subject of the email.
 
 See Quickstart, above, for an example.
 
-### mailgun.send_email( template, subject, recipients, from_address )
+### mailgun.send_email( options )
 
-Given a path to a template, subject, recipients and a from\_address, send an email via the Mailgun API.
+This is the base function for operating the Mailgun API. It uses the `mailgun_api_key` and `mailgun_domain`
+Capistrano variables for interacting with the service. If you need additional control over headers and options
+when sending the emails, call this function directly. For a full list of options, see the Mailgun REST API
+documentation:
 
-This function exists for convenience if you want to change the default behavior or notify during other events
-triggered by Capistrano. `mailgun.send_email` adheres to the same behavior for recipients (automatically adding
-the domain to the email addresses) as the regular `mailgun.notify_of_deploy` function.
+http://documentation.mailgun.net/api-sending.html
 
-The template will also be executed in the context of the recipe and will have access to everything that
-capistrano has access to.
+This function also takes the following additional options:
+
+ * `:text_template` -- a path to an ERB template for the text body of the email.
+ * `:html_template` -- a path to an ERB template for the HTML body of the email.
+
+The templates will have access to all of your Capistrano variables.
+
+Of course, you can also pass `:text` and `:html` options for the exact text/html bodies of the sent emails.
 
 ### deployer_username
 
@@ -113,10 +137,8 @@ actually did the deployment.
 
 ## Limitations
 
- * Only supports plain-text emails. This should be fixed in the next release.
  * Only supports ERB for templates. This should be changed in a future release.
- * Simpler support for specifying templates? Should not need to pass absolute path, hopefully.
- * Extremely limited access to Mailgun parameters. Eventually I'd like to add support for better customization of this.
+ * Currently requires that ERB templates are on the filesystem. Future releases may allow for inline templates.
 
 ## Contributing
 
