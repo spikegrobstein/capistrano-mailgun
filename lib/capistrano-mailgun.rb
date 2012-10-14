@@ -6,6 +6,31 @@ require 'erb'
 module Capistrano
   module Mailgun
 
+    def self.load_into(config)
+      config.load do
+
+        Capistrano.plugin :mailgun, Capistrano::Mailgun
+
+        set(:mailgun_subject) { "[Deployment] #{ application.capitalize } completed" }
+
+        set(:mailgun_api_key) { abort "Please set mailgun_api_key accordingly" }
+        set(:mailgun_domain) { abort "Please set mailgun_domain accordingly" }
+        set(:mailgun_from) { abort "Please set mailgun_from to your desired From field" }
+        set(:mailgun_recipients) { abort "Please specify mailgun_recipients" }
+        set(:mailgun_recipient_domain) { abort "Please set mailgun_recipient_domain accordingly" }
+
+        set(:deployer_username) do
+          if fetch(:scm, nil).to_sym == :git
+            `git config user.name`.chomp
+          else
+            `whoami`.chomp
+          end
+        end
+
+
+      end # config.load
+    end
+
     # simple wrapper for sending an email with a given template
     def send_email(options)
       options = process_send_email_options(options)
@@ -14,8 +39,21 @@ module Capistrano
     end
 
     # does a deploy notification leveraging variables defined in capistrano.
-    def notify_of_deploy(template_name)
-      send_email( template_name, mailgun_subject, build_recipients( mailgun_recipients ), mailgun_from )
+    def notify_of_deploy
+      options = {
+        :to => build_recipients( fetch(:mailgun_recipients) ),
+        :from => fetch(:mailgun_from),
+        :subject => fetch(:mailgun_subject)
+      }
+
+      if fetch(:mailgun_text_template, nil).nil? && fetch(:mailgun_html_template, nil).nil?
+        abort "You must specify one (or both) of mailgun_text_template and mailgun_html_template to use notify_of_deploy"
+      end
+
+      options[:text_template] = fetch(:mailgun_text_template) if fetch(:mailgun_text_template, nil)
+      options[:html_template] = fetch(:mailgun_html_template) if fetch(:mailgun_html_template, nil)
+
+      send_email options
     end
 
     # kinda unused function for locating a provided template
@@ -32,7 +70,7 @@ module Capistrano
         if r.match /.+?@.+?$/
           r
         else
-          "#{ r }@#{ mailgun_recipient_domain }"
+          "#{ r }@#{ fetch(:mailgun_recipient_domain) }"
         end
       end.uniq
     end
@@ -56,25 +94,5 @@ module Capistrano
 end
 
 if Capistrano::Configuration.instance
-  Capistrano::Configuration.instance.load do
-    Capistrano.plugin :mailgun, Capistrano::Mailgun
-
-    set(:mailgun_subject) { "[Deployment] #{ application.capitalize } completed" }
-
-    set(:mailgun_api_key) { abort "Please set mailgun_api_key accordingly" }
-    set(:mailgun_domain) { abort "Please set mailgun_domain accordingly" }
-    set(:mailgun_from) { abort "Please set mailgun_from to your desired From field" }
-    set(:mailgun_recipients) { abort "Please specify mailgun_recipients" }
-    set(:mailgun_recipient_domain) { abort "Please set mailgun_recipient_domain accordingly" }
-
-    set(:deployer_username) do
-      if fetch(:scm, nil).to_sym == :git
-        `git config user.name`.chomp
-      else
-        `whoami`.chomp
-      end
-    end
-
-  end
-
+  Capistrano::Mailgun.load_into(Capistrano::Configuration.instance)
 end

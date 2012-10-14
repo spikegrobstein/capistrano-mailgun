@@ -7,9 +7,7 @@ describe Capistrano::Mailgun do
   end
 
   before do
-    config.load do
-      Capistrano.plugin :mailgun, Capistrano::Mailgun
-    end
+    Capistrano::Mailgun.load_into(config)
   end
 
   let!(:mailgun) { config.mailgun }
@@ -35,7 +33,7 @@ describe Capistrano::Mailgun do
     end
 
     context "when working with unqualified email addresses" do
-      before(:all) do
+      before do
         config.load do
           set :mailgun_recipient_domain, 'another.com'
         end
@@ -89,6 +87,37 @@ describe Capistrano::Mailgun do
         set :mailgun_api_key, 'asdfasdf'
         set :mailgun_domain, 'example.com'
       end
+    end
+
+  end
+
+  context "#notify_of_deploy" do
+
+    before do
+      config.load do
+        set :mailgun_recipients, 'people@example.com'
+        set :mailgun_from, 'me@example.com'
+
+        set :mailgun_subject, 'new subject'
+      end
+    end
+
+    it "should raise an error if neither mailgun_text_template nor mailgun_html_template are defined" do
+      lambda { mailgun.send(:notify_of_deploy) }.should raise_error
+    end
+
+    it "should not raise an error if mailgun_text_template is defined" do
+      config.load { set :mailgun_text_template, 'template' }
+      mailgun.should_receive(:send_email)
+
+      lambda { mailgun.notify_of_deploy }.should_not raise_error
+    end
+
+    it "should not raise an error if mailgun_html_template is defined" do
+      config.load { set :mailgun_html_template, 'template' }
+      mailgun.should_receive(:send_email)
+
+      lambda { mailgun.notify_of_deploy }.should_not raise_error
     end
 
   end
