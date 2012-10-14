@@ -105,7 +105,7 @@ Setting this will override the default.
 ### mailgun.notify_of_deploy
 
 This is a convenience function to send an email via the Mailgun api using your Capistrano variables for
-basic configuration. It will either/or `mailgun_html_template` and `mailgun_text_template` to generate the 
+basic configuration. It will use either/or `mailgun_html_template` and `mailgun_text_template` to generate the
 email body, `mailgun_recipients` for who to address the email to, `mailgun_from` for the reply-to field
 of the email and `mailgun_subject` for the subject of the email.
 
