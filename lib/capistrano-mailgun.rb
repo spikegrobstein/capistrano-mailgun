@@ -7,12 +7,10 @@ module Capistrano
   module Mailgun
 
     # simple wrapper for sending an email with a given template
-    def send_email(template, subject, recipients, from_address)
-      RestClient.post build_mailgun_uri( mailgun_api_key, mailgun_domain ),
-        :from => from_address,
-        :to => build_recipients( recipients ).join(','),
-        :subject => subject,
-        :text => ERB.new( File.open( find_template(template), 'r' ).read ).result(self.binding)
+    def send_email(options)
+      options = process_send_email_options(options)
+
+      RestClient.post build_mailgun_uri( mailgun_api_key, mailgun_domain ), options
     end
 
     # does a deploy notification leveraging variables defined in capistrano.
@@ -37,6 +35,17 @@ module Capistrano
           "#{ r }@#{ mailgun_recipient_domain }"
         end
       end.uniq
+    end
+
+    # apply templates and all that jazz
+    def process_send_email_options(options)
+      text_template = options.delete(:text_template)
+      html_template = options.delete(:html_template)
+
+      options[:text] = ERB.new( File.open( find_template(text_template) ) ).result(self.binding) if text_template
+      options[:html] = ERB.new( File.open( find_template(html_template) ) ).result(self.binding) if html_template
+
+      options
     end
 
     def build_mailgun_uri(mailgun_api_key, mailgun_domain)

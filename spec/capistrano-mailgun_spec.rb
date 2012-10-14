@@ -82,4 +82,45 @@ describe Capistrano::Mailgun do
 
   end
 
+  context "#send_email" do
+
+    before do
+      config.load do
+        set :mailgun_api_key, 'asdfasdf'
+        set :mailgun_domain, 'example.com'
+      end
+    end
+
+  end
+
+  context "#process_send_email_options" do
+
+    it "should set text to the rendered text template if text_template is passed" do
+      File.should_receive(:open).and_return('template')
+
+      mailgun.send(:process_send_email_options, :text_template => 'template')[:text].should == 'template'
+    end
+
+    it "should not change text if no text_template is passed" do
+      ERB.should_not_receive(:new)
+      File.should_not_receive(:open)
+
+      mailgun.send(:process_send_email_options, :text => 'normal text')[:text].should == 'normal text'
+    end
+
+    it "should set html to the rendered html template if html_template is passed" do
+      File.should_receive(:open).and_return('template')
+
+      mailgun.send(:process_send_email_options, :html_template => 'template')[:html].should == 'template'
+    end
+
+    it "should not change html if no html_template is passed" do
+      ERB.should_not_receive(:new)
+      File.should_not_receive(:open)
+
+      mailgun.send(:process_send_email_options, :html => 'normal html')[:html].should == 'normal html'
+    end
+
+  end
+
 end
