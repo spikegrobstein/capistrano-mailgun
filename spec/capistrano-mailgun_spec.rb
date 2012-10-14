@@ -56,6 +56,7 @@ describe Capistrano::Mailgun do
 
   context "#find_template" do
 
+    # future behavior might be different
     it "should return the path passed to it" do
       mailgun.find_template('asdf').should == 'asdf'
     end
@@ -63,7 +64,7 @@ describe Capistrano::Mailgun do
   end
 
 
-  context "validations" do
+  context "when ensuring cap variables are defined" do
 
     def should_require(var)
       lambda do
