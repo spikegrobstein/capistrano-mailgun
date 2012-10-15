@@ -49,6 +49,57 @@ You should then create a `mail.erb` file in the same directory as `deploy.rb`:
 
 That's it. When you do a deploy, it should automatically send an email.
 
+## Example using mailgun.send_email
+
+If you need a little more control over the message being sent or you want to bcc or be a little
+more conditional over what you're sending, see the following example, which should be placed
+in your `deploy.rb` file:
+
+    require 'capistrano-mailgun'
+
+    # when using send_email, the following 2 settings are REQUIRED
+    set :mailgun_api_key, 'key-12345678901234567890123456789012' # your mailgun API key
+    set :mailgun_domain, 'example.com' # your mailgun email domain
+
+    set(:email_body) { abort "Please set email_body using `-s email_body='this is the body of the email'" }
+
+    # some variables that we'll use when calling mailgun.send_email
+    set :ops_emails, [ 'alice@example.com', 'bob@example.com' ]
+    set :dev_emails, [ 'carl@example.com' ]
+
+    # some basic tasks
+    namespace :email do
+      task :ops do
+        mailgun.send_email(
+          :to => mailgun.build_recipients(ops_emails),
+          :from => 'some_dude@example.com',
+          :subject => 'you have just been mailgunned',
+          :text => email_body
+        )
+      end
+
+      task :devs do
+        mailgun.send_email(
+          :to => 'no-reply@example.com',
+          :from => 'no-reply@example.com',
+          :bcc => mailgun.build_recipients(dev_emails),
+          :subject => 'You guys are just developers',
+          :text => email_body
+        )
+      end
+    end
+
+This defines 2 tasks that can be used to send emails to ops or devs. The `email:ops` task is using
+an Capistrano variable `email_body` which should be set on the commandline. With this example, you could
+send an email to ops guys like the following:
+
+    cap email:ops -s email_body="You guys are awesome. Keep up the good work"
+
+You could also take advantage of `:text_template` and/or `:html_template` for more complex messages. The
+above is just an example.
+
+Also, notice the use of `mailgun.build_recipients`. See documentation below for more information.
+
 ## Capistrano Variables
 
 `capistrano-mailgun` leverages variables defined in Capistrano to reduce the amount of configuration
@@ -101,6 +152,11 @@ Setting this will override the default.
 ## Function API
 
 `capistrano-mailgun` has a couple of methods to enable you to send emails easily. The following are the functions:
+
+### mailgun.build_recipients( recipients )
+
+Given an array of email addresses, this will join them with a comma so any recipients field with more than 1 recipient
+will be formatted properly. Typically, you will only use this function in the event that you're using `mailgun.send_email`.
 
 ### mailgun.notify_of_deploy
 
