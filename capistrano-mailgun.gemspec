@@ -4,8 +4,8 @@ require File.expand_path('../lib/capistrano-mailgun/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Spike Grobstein"]
   gem.email         = ["spike@ticketevolution.com"]
-  gem.description   = %q{Notify of deploys and other actions using mailgun}
-  gem.summary       = %q{Notify of deploys and other actions using mailgun}
+  gem.description   = %q{Send emails using the Mailgun API from your Capistrano recipes. Simple configuration using Capistrano variables along with direct access to the API.}
+  gem.summary       = %q{Capistrano plugin for sending emails via the Mailgun API.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
