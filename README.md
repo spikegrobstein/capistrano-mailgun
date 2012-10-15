@@ -187,7 +187,7 @@ Of course, you can also pass `:text` and `:html` options for the exact text/html
 
 ### deployer_username
 
-This is a default capistrano variable that is defined in the gyem. It will use the `git config user.name` if `scm` is
+This is a default capistrano variable that is defined in the gem. It will use the `git config user.name` if `scm` is
 configured as `:git` or use `whoami` if not. This is handy if you want to notify people of which user
 actually did the deployment.
 
