@@ -6,6 +6,9 @@ require 'erb'
 module Capistrano
   module Mailgun
 
+    # Load the base configuration into the given Capistrano::Instance.
+    # This is primarily used for testing and is executed automatically when requiring
+    # the library in a Capistrano recipe.
     def self.load_into(config)
       config.load do
 
@@ -31,14 +34,26 @@ module Capistrano
       end # config.load
     end
 
-    # simple wrapper for sending an email with a given template
+    # Simple wrapper for sending an email with a given template
+    # Supports all options that the Mailgun API supports. In addition, it also accepts:
+    #  +:text_template+ -- the path to the template for the text body. It will be processed and interpolated and set the +text+ field when doing the API call.
+    #  +:html_template+ -- the path to the template for the html body. It will be processed and interpolated and set the +html+ field when doing the API call.
     def send_email(options)
       options = process_send_email_options(options)
 
       RestClient.post build_mailgun_uri( mailgun_api_key, mailgun_domain ), options
     end
 
-    # does a deploy notification leveraging variables defined in capistrano.
+    # Sends the email via the Mailgun API using variables configured in Capistrano.
+    # It depends on the following Capistrano vars in addition to the default:
+    #  +mailgun_recipients+
+    #  +mailgun_from+
+    #  +mailgun_subject+
+    # Requires one or both of the following:
+    #  +mailgun_text_template+
+    #  +mailgun_html_template+
+    #
+    # See README for explanations of the above variables.
     def notify_of_deploy
       options = {
         :to => build_recipients( fetch(:mailgun_recipients) ),
@@ -56,13 +71,14 @@ module Capistrano
       send_email options
     end
 
-    # kinda unused function for locating a provided template
+    # Placeholder method for hunting down templates. Currently does nothing.
     def find_template(t)
       return t
       File.join( File.dirname(__FILE__), t )
     end
 
-    # regenerates the recipients list using the mailgun_domain for any reciients without domains
+    # Given an array of +recipients+, it returns a comma-delimited, deduplicated string, suitable for populating the +to+ field of a Mailgun API call.
+    # Optionally, it will take a +default_domain+ which will automatically be appended to any unqualified recipients (eg: 'spike' => 'spike@example.com')
     def build_recipients(recipients, default_domain=nil)
       [*recipients].map do |r|
         if r.match /.+?@.+?$/ # the email contains an @ so it's fully-qualified.
@@ -86,6 +102,7 @@ module Capistrano
       options
     end
 
+    # builds the Mailgun API URI from the given options.
     def build_mailgun_uri(mailgun_api_key, mailgun_domain)
       "https://api:#{ mailgun_api_key }@api.mailgun.net/v2/#{ mailgun_domain }/messages"
     end
