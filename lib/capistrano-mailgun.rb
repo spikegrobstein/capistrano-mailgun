@@ -63,12 +63,12 @@ module Capistrano
     end
 
     # regenerates the recipients list using the mailgun_domain for any reciients without domains
-    def build_recipients(recipients)
+    def build_recipients(recipients, default_domain=nil)
       [*recipients].map do |r|
-        if r.match /.+?@.+?$/
+        if r.match /.+?@.+?$/ # the email contains an @ so it's fully-qualified.
           r
         else
-          "#{ r }@#{ fetch(:mailgun_recipient_domain) }"
+          "#{ r }@#{ default_domain || fetch(:mailgun_recipient_domain) }"
         end
       end.uniq
     end

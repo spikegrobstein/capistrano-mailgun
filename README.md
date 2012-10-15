@@ -64,14 +64,14 @@ in your `deploy.rb` file:
     set(:email_body) { abort "Please set email_body using `-s email_body='this is the body of the email'" }
 
     # some variables that we'll use when calling mailgun.send_email
-    set :ops_emails, [ 'alice@example.com', 'bob@example.com' ]
-    set :dev_emails, [ 'carl@example.com' ]
+    set :ops_emails, [ 'alice', 'bob' ]
+    set :dev_emails, [ 'carl@contractors.com', 'dave' ]
 
     # some basic tasks
     namespace :email do
       task :ops do
         mailgun.send_email(
-          :to => mailgun.build_recipients(ops_emails),
+          :to => mailgun.build_recipients(ops_emails, 'example.com'),
           :from => 'some_dude@example.com',
           :subject => 'you have just been mailgunned',
           :text => email_body
@@ -82,7 +82,7 @@ in your `deploy.rb` file:
         mailgun.send_email(
           :to => 'no-reply@example.com',
           :from => 'no-reply@example.com',
-          :bcc => mailgun.build_recipients(dev_emails),
+          :bcc => mailgun.build_recipients(dev_emails, 'example.com'),
           :subject => 'You guys are just developers',
           :text => email_body
         )
@@ -153,10 +153,14 @@ Setting this will override the default.
 
 `capistrano-mailgun` has a couple of methods to enable you to send emails easily. The following are the functions:
 
-### mailgun.build_recipients( recipients )
+### mailgun.build_recipients( recipients, default_domain=nil )
 
 Given an array of email addresses, this will join them with a comma so any recipients field with more than 1 recipient
 will be formatted properly. Typically, you will only use this function in the event that you're using `mailgun.send_email`.
+
+You can also pass an alternate `default_domain`. This is useful if you're not using the global `mailgun_recipient_domain`
+Capistrano variable of if you want to override the behavior in this one use-case. `mailgun.build_recipients` will always
+choose the specified `default_domain` over `mailgun_recipient_domain`.
 
 ### mailgun.notify_of_deploy
 

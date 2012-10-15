@@ -16,8 +16,8 @@ describe Capistrano::Mailgun do
     let(:email_1) { 'spike@example.com' }
     let(:email_2) { 'bob@example.com' }
 
-    def build_recipients(recipients)
-      mailgun.send(:build_recipients, recipients)
+    def build_recipients(recipients, default_domain=nil)
+      mailgun.send(:build_recipients, recipients, default_domain)
     end
 
     it "should accept a single recipient (not an array)" do
@@ -47,6 +47,18 @@ describe Capistrano::Mailgun do
         build_recipients( [email_1, 'spike']).should == [email_1, 'spike@another.com']
       end
 
+    end
+
+    context "when working with custom default domains" do
+
+      it "should not raise an error if mailgun_recipient_domain is not defined, but default_domain is" do
+        lambda { build_recipients( ['spike'], 'example.com' ) }.should_not raise_error
+      end
+
+      it "should use the passed default_domain over the mailgun_recipient_domain if it's passed" do
+        config.load { set :mailgun_recipient_domain, 'example.com' }
+        build_recipients( ['spike'], 'awesome.com' ).should == ['spike@awesome.com']
+      end
     end
 
 
