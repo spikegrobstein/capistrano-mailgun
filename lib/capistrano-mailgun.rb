@@ -13,11 +13,11 @@ module Capistrano
 
         set(:mailgun_subject) { "[Deployment] #{ application.capitalize } completed" }
 
-        set(:mailgun_api_key) { abort "Please set mailgun_api_key accordingly" }
-        set(:mailgun_domain) { abort "Please set mailgun_domain accordingly" }
-        set(:mailgun_from) { abort "Please set mailgun_from to your desired From field" }
-        set(:mailgun_recipients) { abort "Please specify mailgun_recipients" }
-        set(:mailgun_recipient_domain) { abort "Please set mailgun_recipient_domain accordingly" }
+        set(:mailgun_api_key)           { abort "Please set mailgun_api_key accordingly" }
+        set(:mailgun_domain)            { abort "Please set mailgun_domain accordingly" }
+        set(:mailgun_from)              { abort "Please set mailgun_from to your desired From field" }
+        set(:mailgun_recipients)        { abort "Please specify mailgun_recipients" }
+        set(:mailgun_recipient_domain)  { abort "Please set mailgun_recipient_domain accordingly" }
 
         set(:deployer_username) do
           if fetch(:scm, nil).to_sym == :git
@@ -80,8 +80,8 @@ module Capistrano
       text_template = options.delete(:text_template)
       html_template = options.delete(:html_template)
 
-      options[:text] = ERB.new( File.open( find_template(text_template) ) ).result(self.binding) if text_template
-      options[:html] = ERB.new( File.open( find_template(html_template) ) ).result(self.binding) if html_template
+      options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
+      options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
 
       options
     end

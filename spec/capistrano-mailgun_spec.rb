@@ -123,11 +123,17 @@ describe Capistrano::Mailgun do
   end
 
   context "#process_send_email_options" do
+    let(:test_mailgun_domain) { 'example.com' }
+
+    before do
+      config.load { set :mailgun_domain, 'example.com' }
+    end
 
     it "should set text to the rendered text template if text_template is passed" do
-      File.should_receive(:open).and_return('template')
+      result = mailgun.send(:process_send_email_options, :text_template => fixture_path('text_body.erb'))
 
-      mailgun.send(:process_send_email_options, :text_template => 'template')[:text].should == 'template'
+      result[:text].should include(test_mailgun_domain)
+      result[:text].should_not include('<%=')
     end
 
     it "should not change text if no text_template is passed" do
@@ -138,9 +144,10 @@ describe Capistrano::Mailgun do
     end
 
     it "should set html to the rendered html template if html_template is passed" do
-      File.should_receive(:open).and_return('template')
+      result = mailgun.send(:process_send_email_options, :html_template => fixture_path('html_body.erb'))
 
-      mailgun.send(:process_send_email_options, :html_template => 'template')[:html].should == 'template'
+      result[:html].should include(test_mailgun_domain)
+      result[:html].should_not include('<%=')
     end
 
     it "should not change html if no html_template is passed" do
