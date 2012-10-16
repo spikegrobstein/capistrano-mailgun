@@ -2,10 +2,11 @@
 
 *Bust a cap in your deployment notifications*
 
-Send emails with erb template bodies easily from inside your capistrano recipes.
+Mailgun.org is an excellent, API-driven email provider. So, bust out your nine, pop in the clip and send emails
+easily from inside your Capistrano recipes.
 
-Although built primarily for sending notification emails of deploys, it also includes nice helper methods
-for sending any kind of email via the Mailgun API.
+`Capistrano::Mailgun` provides a simple interface for notifying of deploys, exposing your Capistrano
+variables to your ERB template built on top of a more robust public interface to the Mailgun API.
 
 ## Installation
 
@@ -196,6 +197,8 @@ actually did the deployment.
 
  * Only supports ERB for templates. This should be changed in a future release.
  * Currently requires that ERB templates are on the filesystem. Future releases may allow for inline templates.
+ * `notify_of_deploy` does not yet support CC or BCC fields.
+ * No built-in email templates, yet. You will need to build your own for now.
 
 ## Contributing
 
@@ -204,3 +207,7 @@ actually did the deployment.
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Author
+
+`Capistrano::Mailgun` is written by Spike Grobstein and is used in production at [Ticket Evolution](http://www.ticketevolution.com)
