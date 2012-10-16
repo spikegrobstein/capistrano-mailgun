@@ -36,8 +36,8 @@ module Capistrano
 
     # Simple wrapper for sending an email with a given template
     # Supports all options that the Mailgun API supports. In addition, it also accepts:
-    #  +:text_template+ -- the path to the template for the text body. It will be processed and interpolated and set the +text+ field when doing the API call.
-    #  +:html_template+ -- the path to the template for the html body. It will be processed and interpolated and set the +html+ field when doing the API call.
+    # * +:text_template+ -- the path to the template for the text body. It will be processed and interpolated and set the +text+ field when doing the API call.
+    # * +:html_template+ -- the path to the template for the html body. It will be processed and interpolated and set the +html+ field when doing the API call.
     def send_email(options)
       options = process_send_email_options(options)
 
@@ -46,12 +46,12 @@ module Capistrano
 
     # Sends the email via the Mailgun API using variables configured in Capistrano.
     # It depends on the following Capistrano vars in addition to the default:
-    #  +mailgun_recipients+
-    #  +mailgun_from+
-    #  +mailgun_subject+
+    # * +mailgun_recipients+
+    # * +mailgun_from+
+    # * +mailgun_subject+
     # Requires one or both of the following:
-    #  +mailgun_text_template+
-    #  +mailgun_html_template+
+    # * +mailgun_text_template+
+    # * +mailgun_html_template+
     #
     # See README for explanations of the above variables.
     def notify_of_deploy
