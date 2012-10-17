@@ -1,0 +1,30 @@
+Application deployment successful!
+
+Deployed by: <%= deployed_by %>
+Deployed at: <%= Time.now %>
+
+Application: <%= application %>
+Repository:  <%= repository %>
+<% if fetch(:stage) %>Environment: <%= stage %><% end -%>
+
+<% if fetch(:branch) %>Ref:         <%= branch %><% end -%>
+Sha1:        <%= fetch(:latest_revision, 'N/A' %>
+Release:     <%= fetch(:current_release_name, 'N/A') %>
+
+WWW:         <%= url %>
+
+Log:
+---------------------------------------------------------------------------------
+<%=
+
+  begin
+    log_output = run_locally("git log --oneline | head 20")
+    if log_output.trim.length == 0
+      log_output = "NO CHANGES SINCE LAST COMMIT?"
+    end
+  rescue
+    log_output = 'LOG INFORMATION NOT AVAILABLE'
+  end
+
+  log_information
+%>
