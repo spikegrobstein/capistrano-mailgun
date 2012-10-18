@@ -230,6 +230,12 @@ your project and customize.
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## Author
+## Acknowledgements
 
 `Capistrano::Mailgun` is written by Spike Grobstein and is used in production at [Ticket Evolution](http://www.ticketevolution.com)
+
+`Capistrano::Mailgun` leverages the awesome email sending API of [Mailgun.org](http://mailgun.org). You should definitely check it out.
+
+## License
+
+`Capistrano::Mailgun` is licensed under the MIT License. See `LICENSE` file.
