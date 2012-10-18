@@ -156,8 +156,8 @@ notifications, update this. It should be in the following format:
 
     https://github.com/USERNAME/PROJECT
 
-This is used for linking to commits from the log and linking to the exact revision that was deployed on
-Github.
+This is used for linking to commits from the log and linking to the Github page for the exact revision that
+was deployed.
 
 ## Function API
 
