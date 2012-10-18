@@ -22,6 +22,10 @@ module Capistrano
         set(:mailgun_recipients)        { abort "Please specify mailgun_recipients" }
         set(:mailgun_recipient_domain)  { abort "Please set mailgun_recipient_domain accordingly" }
 
+        # set these to nil to not use, or set to path to your custom template
+        set :mailgun_text_template, :deploy_text
+        set :mailgun_html_template, :deploy_html
+
         set(:deployer_username) do
           if fetch(:scm, nil).to_sym == :git
             `git config user.name`.chomp
@@ -65,8 +69,8 @@ module Capistrano
         abort "You must specify one (or both) of mailgun_text_template and mailgun_html_template to use notify_of_deploy"
       end
 
-      options[:text_template] = fetch(:mailgun_text_template) if fetch(:mailgun_text_template, nil)
-      options[:html_template] = fetch(:mailgun_html_template) if fetch(:mailgun_html_template, nil)
+      options[:text_template] = fetch(:mailgun_text_template, nil)
+      options[:html_template] = fetch(:mailgun_html_template, nil)
 
       send_email options
     end
@@ -102,6 +106,7 @@ module Capistrano
       when :deploy_text then default_deploy_text_template_path
       when :deploy_html then default_deploy_html_template_path
       else
+        abort "Unknown template symbol: #{ t }" if t.is_a?(Symbol)
         abort "Template not found: #{ t }" unless File.exists?(t)
         t
       end
