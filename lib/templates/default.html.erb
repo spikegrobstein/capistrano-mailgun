@@ -21,6 +21,7 @@
       width: 15%;
       margin-right: 10px;
       display: inline-block;
+      white-space: nowrap;
 
       clear: both;
     }
@@ -54,6 +55,7 @@
 
     .log ul li a:hover {
       text-decoration: underline;
+      color: black;
     }
 
   </style>
@@ -128,7 +130,7 @@
         <% log_output.each do |line| %>
           <li>
             <% if fetch(:github_url, nil) %>
-            <a href="#"><%= line[0] %></a>
+            <a href="<%= github_url %>/commit/<%= line[0] %>"><%= line[0] %></a>
             <% else %>
             <%= line[0] %>
             <% end %>
