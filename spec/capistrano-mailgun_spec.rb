@@ -66,9 +66,46 @@ describe Capistrano::Mailgun do
 
   context "#find_template" do
 
-    # future behavior might be different
-    it "should return the path passed to it" do
-      mailgun.find_template('asdf').should == 'asdf'
+    def find_template(t)
+      mailgun.send(:find_template, t)
+    end
+
+    context "when dealing with a path" do
+
+      it "should return the path if the file exists" do
+        File.stub!(:exists? => true)
+
+        find_template('asdf').should == 'asdf'
+      end
+
+      it "should not raise an error if the file exists" do
+        File.stub!(:exists? => true)
+
+        lambda { find_template('adsf') }.should_not raise_error
+      end
+
+      it "should raise an error if the path doesn't exist" do
+        File.stub!(:exists? => false)
+
+        lambda { find_template('asdf') }.should raise_error
+      end
+
+    end
+
+    context "when dealing with a symbol" do
+
+      it "should return the default_deploy_text_template_path for :deploy_text" do
+        mailgun.should_receive(:default_deploy_text_template_path)
+
+        find_template(:deploy_text)
+      end
+
+      it "should return the default_deploy_html_template_path for :deploy_html" do
+        mailgun.should_receive(:default_deploy_html_template_path)
+
+        find_template(:deploy_html)
+      end
+
     end
 
   end

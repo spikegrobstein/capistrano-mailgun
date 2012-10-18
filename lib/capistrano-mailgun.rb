@@ -71,12 +71,6 @@ module Capistrano
       send_email options
     end
 
-    # Placeholder method for hunting down templates. Currently does nothing.
-    def find_template(t)
-      return t
-      File.join( File.dirname(__FILE__), t )
-    end
-
     # Given an array of +recipients+, it returns a comma-delimited, deduplicated string, suitable for populating the +to+ field of a Mailgun API call.
     # Optionally, it will take a +default_domain+ which will automatically be appended to any unqualified recipients (eg: 'spike' => 'spike@example.com')
     def build_recipients(recipients, default_domain=nil)
@@ -90,6 +84,28 @@ module Capistrano
     end
 
     private
+
+    def default_deploy_text_template_path
+      default_template_path 'default.txt.erb'
+    end
+
+    def default_deploy_html_template_path
+      default_template_path 'default.html.erb'
+    end
+
+    def default_template_path(name)
+      File.join( File.dirname(__FILE__), 'templates', name)
+    end
+
+    def find_template(t)
+      case t
+      when :deploy_text then default_deploy_text_template_path
+      when :deploy_html then default_deploy_html_template_path
+      else
+        abort "Template not found: #{ t }" unless File.exists?(t)
+        t
+      end
+    end
 
     # apply templates and all that jazz
     def process_send_email_options(options)
