@@ -1,0 +1,143 @@
+<html>
+<head>
+  <style>
+    body {
+      font: 12px "Helvetica", "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+    }
+    .section h2 {
+      color: #999;
+      margin: 0;
+    }
+
+    .section {
+      margin-bottom: 10px;
+      border-radius: 10px;
+      background-color: #eee;
+
+      padding: 5px 20px;
+    }
+
+    dt {
+      width: 15%;
+      margin-right: 10px;
+      display: inline-block;
+
+      clear: both;
+    }
+
+    dd {
+      width: 65%;
+      display: inline-block;
+    }
+
+    dl dt {
+      font-weight: bold;
+    }
+
+    .log ul {
+      font-family: monospace;
+
+      list-style: none;
+    }
+
+    .log ul li {
+      margin: 5px;
+    }
+
+    .log ul li a {
+      font-weight: bold;
+      padding: 2px 5px;
+      background-color: #eee;
+      color: #666;
+      text-decoration: none;
+    }
+
+    .log ul li a:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1><%= application.capitalize %> deployment successful!</h1>
+
+  <div class="section">
+    <h2>Deployment Overview</h2>
+
+    <dl>
+      <dt>Deployed by:</dt>
+      <dd><%= deployer_username %></dd>
+
+      <dt>Deployed at:</dt>
+      <dd><%= Time.now %></dd>
+    </dl>
+
+    <dl>
+      <dt>Application:</dt>
+      <dd><%= application %></dd>
+
+      <dt>Repository:</dt>
+      <dd><%= repository %></dd>
+
+      <% if fetch(:stage, nil) %>
+      <dt>Environment:</dt>
+      <dd><%= stage %></dd>
+      <% end %>
+    </div>
+
+    <div class="section">
+      <h2>Deployment Details</h2>
+
+      <dl>
+        <% if fetch(:branch, nil) %>
+        <dt>Ref:</dt>
+        <dd><%= branch %></dd>
+        <% end %>
+
+        <dt>Sha1:</dt>
+        <dd><%= fetch(:latest_revision, 'N/A') %></dd>
+
+        <dt>Release:</dt>
+        <dd><%= File.basename fetch(:current_release) %></dd>
+
+      </dl>
+
+      <% if fetch(:github_url, nil) %>
+      <dl>
+        <dt>WWW:</dt>
+        <dd><%= github_url %>/tree/<%= latest_revision %></dd>
+      </dl>
+      <% end %>
+    </div>
+
+    <div class="log">
+      <h2>Log:</h2>
+
+      <ul>
+        <%
+            log_output = run_locally("git log --oneline | head -20")
+            if log_output.strip.length == 0
+              log_output = "NO CHANGES SINCE LAST COMMIT?"
+
+            else
+              log_output = log_output.split("\n").map { |line| line.strip.split("\s", 2) }
+            end
+
+          %>
+        <% log_output.each do |line| %>
+          <li>
+            <% if fetch(:github_url, nil) %>
+            <a href="#"><%= line[0] %></a>
+            <% else %>
+            <%= line[0] %>
+            <% end %>
+
+            <%= line[1] %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+</body>
+</html>
