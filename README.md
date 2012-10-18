@@ -145,7 +145,7 @@ The subject to be used in deployment emails. This defaults to:
 
 In the event that you're using multistage, it will include that:
 
-    [Deployment] #{ stage } #{ application.capitalize } deploy completed
+    [Deployment] #{ stage.capitalize } #{ application.capitalize } deploy completed
 
 Setting this variable yourself will override the default.
 

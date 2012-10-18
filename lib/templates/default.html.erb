@@ -62,7 +62,9 @@
 </head>
 <body>
 
-  <h1><%= application.capitalize %> deployment successful!</h1>
+  <h1>
+    <%= fetch(:stage, '').capitalize %> <%= application.capitalize %> deployment completed!
+  </h2>
 
   <div class="section">
     <h2>Deployment Overview</h2>

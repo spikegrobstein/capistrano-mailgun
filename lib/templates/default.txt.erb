@@ -1,4 +1,4 @@
-<%= application.capitalize %> deployment successful!
+<%= fetch(:stage, '').capitalize %> <%= application.capitalize %> deployment completed!
 
 Deployed by: <%= deployer_username %>
 Deployed at: <%= Time.now %>
