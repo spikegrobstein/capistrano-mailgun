@@ -35,18 +35,11 @@ To send a notification after deploy, add the following to your `deploy.rb` file:
     set :mailgun_from, 'deployment@example.com' # who the email will appear to come from
     set :mailgun_recipients, [ 'you@example.com', 'otherguy@example.com' ] # who will receive the email
 
-    # The erb template will have visibility into all your capistrano variables.
-    # this template will be the text body of the notification email
-    set :mailgun_text_template, File.join(File.dirname(__FILE__), 'mail.erb')
-
     # create an after deploy hook
     after(:deploy) { mailgun.notify_of_deploy }
 
-You should then create a `mail.erb` file in the same directory as `deploy.rb`:
-
-    <%= application %> has just been deployed by <%= deployer_name %>, yay!
-
-That's it. When you do a deploy, it should automatically send an email.
+That's it. When you do a deploy, it should automatically send an email using the built-in text and HTML
+templates.
 
 ## Example using mailgun.send_email
 
@@ -128,11 +121,17 @@ your email. This is only required if you do not use the `mailgun_html_template` 
 specify both text and html templates and the emails will contain the proper bodies where the client
 supports it.
 
+The default setting for this is `:deploy_text` which is a built-in template. See "Built-in Templates"
+below for more information.
+
 ### mailgun_html_template (required for notify_of_deploy)
 
 This is the path to the ERB template that will be used to generate the HTML body of the email. It is only
 required if you do not specify the `mailgun_text_template` variable. You can specify both text and html
 templates and emails will contain the proper bodies where the client supports it.
+
+The default setting for this is `:deploy_html` which is a built-in template. See "Built-in Templates"
+below for more information.
 
 ### mailgun_recipient_domain
 
@@ -142,9 +141,23 @@ The domain that will be automatically appended to incomplete email addresses in 
 
 The subject to be used in deployment emails. This defaults to:
 
-    [Deployment] #{ application.capitalize } complete
+    [Deployment] #{ application.capitalize } deploy completed
 
-Setting this will override the default.
+In the event that you're using multistage, it will include that:
+
+    [Deployment] #{ stage } #{ application.capitalize } deploy completed
+
+Setting this variable yourself will override the default.
+
+### github_url
+
+If your project is hosted on Github and you'd like to have links to the github repository in the deployment
+notifications, update this. It should be in the following format:
+
+    https://github.com/USERNAME/PROJECT
+
+This is used for linking to commits from the log and linking to the exact revision that was deployed on
+Github.
 
 ## Function API
 
@@ -193,12 +206,21 @@ This is a default capistrano variable that is defined in the gem. It will use th
 configured as `:git` or use `whoami` if not. This is handy if you want to notify people of which user
 actually did the deployment.
 
+## Built-in Templates
+
+`Capistrano::Mailgun` comes with `notify_of_deploy` default built-in templates. There are both HTML and Text
+templates which include information such as the sha1 and ref that has been deployed as well as logs of the last
+commits. Use of the Capistrano variable `github_url` will enable links back to the repository and direct links
+to the commits in the log.
+
+These files live inside the gem in the `lib/templates` directory, so feel free to pull them out, copy into
+your project and customize.
+
 ## Limitations
 
  * Only supports ERB for templates. This should be changed in a future release.
  * Currently requires that ERB templates are on the filesystem. Future releases may allow for inline templates.
  * `notify_of_deploy` does not yet support CC or BCC fields.
- * No built-in email templates, yet. You will need to build your own for now.
 
 ## Contributing
 
