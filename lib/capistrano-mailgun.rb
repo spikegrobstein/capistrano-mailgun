@@ -14,7 +14,9 @@ module Capistrano
 
         Capistrano.plugin :mailgun, Capistrano::Mailgun
 
-        set(:mailgun_subject) { "[Deployment] #{ application.capitalize } completed" }
+        set(:mailgun_subject) do
+          [ "[Deployment]", fetch(:stage, nil), fetch(:application).capitalize, 'deploy completed'].join(' ').gsub(/\s+/, ' ')
+        end
 
         set(:mailgun_api_key)           { abort "Please set mailgun_api_key accordingly" }
         set(:mailgun_domain)            { abort "Please set mailgun_domain accordingly" }
