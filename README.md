@@ -51,6 +51,8 @@ in your `deploy.rb` file:
     set :mailgun_api_key, 'key-12345678901234567890123456789012' # your mailgun API key
     set :mailgun_domain, 'example.com' # your mailgun email domain
 
+    set :mailgun_recipient_domain, 'example.com' # append this to any unqualified email addresses
+
     set(:email_body) { abort "Please set email_body using `-s email_body='this is the body of the email'" }
 
     # some variables that we'll use when calling mailgun.send_email
@@ -61,7 +63,7 @@ in your `deploy.rb` file:
     namespace :email do
       task :ops do
         mailgun.send_email(
-          :to => mailgun.build_recipients(ops_emails, 'example.com'), # use build_recipients to format TO field properly
+          :to => ops_emails, # build_recipients gets called automatically by Capistrano::Mailgun
           :from => 'some_dude@example.com',
           :subject => 'you have just been mailgunned',
           :text => email_body
@@ -72,7 +74,7 @@ in your `deploy.rb` file:
         mailgun.send_email(
           :to => 'no-reply@example.com',
           :from => 'no-reply@example.com',
-          :bcc => mailgun.build_recipients(dev_emails, 'example.com'),
+          :bcc => mailgun.build_recipients(dev_emails, 'audit.example.com'), # note the different domain
           :subject => 'You guys are just developers',
           :text => email_body
         )

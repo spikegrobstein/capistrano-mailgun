@@ -62,7 +62,7 @@ module Capistrano
     # See README for explanations of the above variables.
     def notify_of_deploy
       options = {
-        :to => build_recipients( fetch(:mailgun_recipients) ),
+        :to => fetch(:mailgun_recipients),
         :from => fetch(:mailgun_from),
         :subject => fetch(:mailgun_subject)
       }
@@ -122,11 +122,12 @@ module Capistrano
       text_template = options.delete(:text_template)
       html_template = options.delete(:html_template)
 
-      options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
-      options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
-
+      options[:to] = build_recipients(options[:to]) unless options[:to].nil?
       options[:cc] = build_recipients(options[:cc]) unless options[:cc].nil?
       options[:bcc] = build_recipients(options[:bcc]) unless options[:bcc].nil?
+
+      options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
+      options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
 
       options
     end
