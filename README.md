@@ -180,8 +180,9 @@ was deployed.
 ### mailgun.build_recipients( recipients, default_domain=nil )
 
 Given an array of email addresses, this will join them with a comma so any recipients field with more than 1 recipient
-will be formatted properly, have the recipients list deduplicated and returned as a string. Typically, you will only use
-this function in the event that you're calling `mailgun.send_email` directly.
+will be formatted properly, have the recipients list deduplicated and returned as a string. Typically, you will not call
+this function directly as `Capistrano::Mailgun` calls it implicitely on your `to`, `cc` and `bcc` fields before hitting
+the Mailgun API.
 
 You can also pass an alternate `default_domain`. This is useful if you're not using the global `mailgun_recipient_domain`
 Capistrano variable of if you want to override the behavior in this one use-case. `mailgun.build_recipients` will always
