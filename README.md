@@ -36,10 +36,13 @@ To send a notification after deploy, add the following to your `deploy.rb` file:
     set :mailgun_recipients, [ 'you@example.com', 'otherguy@example.com' ] # who will receive the email
 
     # create an after deploy hook
-    after(:deploy) { mailgun.notify_of_deploy }
+    after :deploy, 'mailgun:notify'
 
 That's it. When you do a deploy, it should automatically send an email using the built-in text and HTML
 templates.
+
+`Capistrano::Mailgun` defines a `mailgun:notify` task which calls the `mailgun.notify_of_deploy` function,
+using your Capistrano configuration to send the notification.
 
 ## Example using mailgun.send_email
 
@@ -172,6 +175,17 @@ notifications, update this. It should be in the following format:
 
 This is used for linking to commits from the log and linking to the Github page for the exact revision that
 was deployed.
+
+## Capistrano Tasks
+
+### mailgun:notify
+
+This task is defined strictly for convenience in defining Capistrano hooks and for sending a notification
+from the commandline.
+
+Normally, you'd want to have an after-deploy hook defined as follows:
+
+    after :deploy, 'mailgun:notify'
 
 ## Function API
 
