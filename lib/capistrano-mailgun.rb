@@ -29,7 +29,7 @@ module Capistrano
         set :mailgun_html_template, :deploy_html
 
         set(:deployer_username) do
-          if fetch(:scm, nil).to_sym == :git
+          if fetch(:scm, '').to_sym == :git
             `git config user.name`.chomp
           else
             `whoami`.chomp
@@ -66,6 +66,9 @@ module Capistrano
         :from => fetch(:mailgun_from),
         :subject => fetch(:mailgun_subject)
       }
+
+      options[:cc] = fetch(:mailgun_cc) if fetch(:mailgun_cc, nil)
+      options[:bcc] = fetch(:mailgun_bcc) if fetch(:mailgun_bcc, nil)
 
       if fetch(:mailgun_text_template, nil).nil? && fetch(:mailgun_html_template, nil).nil?
         abort "You must specify one (or both) of mailgun_text_template and mailgun_html_template to use notify_of_deploy"
@@ -121,6 +124,9 @@ module Capistrano
 
       options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
       options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
+
+      options[:cc] = build_recipients(options[:cc]) unless options[:cc].nil?
+      options[:bcc] = build_recipients(options[:bcc]) unless options[:bcc].nil?
 
       options
     end

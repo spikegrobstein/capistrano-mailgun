@@ -8,6 +8,8 @@ describe Capistrano::Mailgun do
 
   before do
     Capistrano::Mailgun.load_into(config)
+
+    RestClient.stub(:post)
   end
 
   let!(:mailgun) { config.mailgun }
@@ -167,6 +169,65 @@ describe Capistrano::Mailgun do
       mailgun.should_receive(:send_email)
 
       lambda { mailgun.notify_of_deploy }.should_not raise_error
+    end
+
+    context "when using cc and bcc" do
+      let(:cc_email) { 'cc_email@example.com' }
+      let(:bcc_email) { 'bcc_email@example.com' }
+
+      context "when cc and bcc are included" do
+        before do
+
+          ERB.stub!(:new => mock(:result => true))
+
+          config.load do
+            set :application, 'some application'
+
+            set :mailgun_api_key, 'asdfasdf'
+            set :mailgun_domain, 'example.com'
+
+            set :mailgun_cc, 'cc_email@example.com'
+            set :mailgun_bcc, 'bcc_email@example.com'
+
+            set :mailgun_recipient_domain, 'example.com'
+          end
+        end
+
+        after do
+          mailgun.notify_of_deploy
+        end
+
+        it "should recieve process_send_email_options with cc and bcc values" do
+          mailgun.should_receive(:process_send_email_options) do |options|
+            options[:cc].should_not be_nil
+            options[:bcc].should_not be_nil
+          end
+        end
+
+        it "should run build_recipients on cc and bcc" do
+          mailgun.should_receive(:build_recipients).with('people@example.com')
+          mailgun.should_receive(:build_recipients).with(cc_email)
+          mailgun.should_receive(:build_recipients).with(bcc_email)
+        end
+
+        it "should set the options in send_email to include cc if it's there" do
+          config.load do
+            set :mailgun_cc, nil
+          end
+
+          mailgun.should_not_receive(:build_recipients).with(cc_email)
+        end
+
+        it "should set the options in send_email to include bcc if it's there" do
+          config.load do
+            set :mailgun_cc, nil
+          end
+
+          mailgun.should_not_receive(:build_recipients).with(cc_email)
+        end
+
+      end
+
     end
 
   end

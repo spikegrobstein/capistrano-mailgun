@@ -114,6 +114,18 @@ An array of email addresses who should recieve a notification when a deployment 
 You can optionally only specify just the part of the email address before the @ and `capistrano-mailgun` will
 automatically append the `mailgun_recipient_domain` to it. See `mailgun_recipient_domain`.
 
+### mailgun_cc
+
+An array of email addresses who should be CC'd when `mailgun.notify_of_deploy` is called. This will
+follow the same rules as the `mailgun_recipients` variable with respect to the handling of unqualified
+email addresses.
+
+### mailgun_bcc
+
+An array of email addresses who should be BCC'd when `mailgun.notify_of_deploy` is called. This will
+follow the same rules as the `mailgun_recipients` variable with respect to the handling of unqualified
+eail addresses.
+
 ### mailgun_text_template (required for notify_of_deploy)
 
 This is the path to the ERB template that `Capistrano::Mailgun` will use to create the text body of
