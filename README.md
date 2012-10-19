@@ -1,4 +1,4 @@
-# Capistrano-Mailgun  [![Build Status](https://travis-ci.org/spikegrobstein/capistrano-mailgun.png)](https://travis-ci.org/spikegrobstein/capistrano-mailgun)
+# Capistrano::Mailgun  [![Build Status](https://travis-ci.org/spikegrobstein/capistrano-mailgun.png)](https://travis-ci.org/spikegrobstein/capistrano-mailgun)
 
 *Bust a cap in your deployment notifications*
 
@@ -94,7 +94,7 @@ Also, notice the use of `mailgun.build_recipients`. See documentation below for 
 
 ## Capistrano Variables
 
-`capistrano-mailgun` leverages variables defined in Capistrano to reduce the amount of configuration
+`Capistrano::Mailgun` leverages variables defined in Capistrano to reduce the amount of configuration
 you need to do. The following are all variables it supports:
 
 ### mailgun_api_key (required)
@@ -113,7 +113,7 @@ The email address that your notifications will appear to come from (by default).
 
 An array of email addresses who should recieve a notification when a deployment completes.
 
-You can optionally only specify just the part of the email address before the @ and `capistrano-mailgun` will
+You can optionally only specify just the part of the email address before the @ and `Capistrano::Mailgun` will
 automatically append the `mailgun_recipient_domain` to it. See `mailgun_recipient_domain`.
 
 ### mailgun_cc
@@ -175,7 +175,7 @@ was deployed.
 
 ## Function API
 
-`capistrano-mailgun` has a couple of methods to enable you to send emails easily. The following are the functions:
+`Capistrano::Mailgun` has a couple of methods to enable you to send emails easily. The following are the functions:
 
 ### mailgun.build_recipients( recipients, default_domain=nil )
 
