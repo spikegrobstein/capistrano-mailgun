@@ -249,7 +249,6 @@ your project and customize.
 
  * Only supports ERB for templates. This should be changed in a future release.
  * Currently requires that ERB templates are on the filesystem. Future releases may allow for inline templates.
- * `notify_of_deploy` does not yet support CC or BCC fields.
 
 ## Contributing
 
