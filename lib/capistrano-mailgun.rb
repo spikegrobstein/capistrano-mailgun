@@ -37,20 +37,17 @@ module Capistrano
         end
 
         # default mailgun email tasks
-        namespace :mailgun do
+        desc <<-DESC
+          Send a mailgun deployment notification.
 
-          desc <<-DESC
-            Send a mailgun deployment notification.
-
-            This is here for convenience so you can force a notification to
-            be sent from the commandline and also to simplify configuring
-            after-deploy hooks and even after-mailgun-notify hooks.
-          DESC
-          task :notify do
-            mailgun.notify_of_deploy
-          end
-
+          This is here for convenience so you can force a notification to
+          be sent from the commandline and also to simplify configuring
+          after-deploy hooks and even after-mailgun-notify hooks.
+        DESC
+        task :mailgun_notify do
+          mailgun.notify_of_deploy
         end
+
 
 
       end # config.load
