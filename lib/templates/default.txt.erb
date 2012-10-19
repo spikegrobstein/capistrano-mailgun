@@ -3,8 +3,8 @@
 Deployed by: <%= deployer_username %>
 Deployed at: <%= Time.now %>
 
-Application: <%= application %>
-Repository:  <%= repository %>
+Application: <%= fetch(:application, 'N/A') %>
+Repository:  <%= fetch(:repository, 'N/A') %>
 <% if fetch(:stage, nil) %>Environment: <%= stage %><% end %>
 
 <% if fetch(:branch, nil) %>Ref:         <%= branch %><% end %>

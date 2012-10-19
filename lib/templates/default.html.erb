@@ -79,10 +79,10 @@
 
     <dl>
       <dt>Application:</dt>
-      <dd><%= application %></dd>
+      <dd><%= fetch(:application, 'N/A') %></dd>
 
       <dt>Repository:</dt>
-      <dd><%= repository %></dd>
+      <dd><%= fetch(:repository, 'N/A') %></dd>
 
       <% if fetch(:stage, nil) %>
       <dt>Environment:</dt>
