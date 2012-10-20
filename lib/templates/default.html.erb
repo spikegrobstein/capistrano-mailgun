@@ -114,12 +114,13 @@
       </dl>
       <% end %>
     </div>
-
+<% log_output = mailgun.log_output(latest_revision, real_revision) %>
+<% unless log_output.count == 0 %>
     <div class="log">
       <h2>Log:</h2>
 
       <ul>
-        <% log_output(latest_revision, real_revision).each do |line| %>
+        <% mailgun.log_output(latest_revision, real_revision).each do |line| %>
           <li>
             <% if fetch(:github_url, nil) %>
             <a href="<%= github_url %>/commit/<%= line[0] %>"><%= line[0] %></a>
@@ -132,6 +133,7 @@
         <% end %>
       </ul>
     </div>
+<% end %>
 
 </body>
 </html>

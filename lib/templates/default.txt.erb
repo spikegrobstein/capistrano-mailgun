@@ -12,9 +12,11 @@ Sha1:        <%= fetch(:latest_revision, 'N/A') %>
 Release:     <%= fetch(:release_name, 'N/A') %>
 
 <% if fetch(:url, nil) %>WWW:         <%= fetch(:url) %><% end %>
-
+<% log_output = mailgun.log_output(latest_revision, real_revision) %>
+<% unless log_output.count == 0 %>
 Log:
 ---------------------------------------------------------------------------------
-<% log_output(latest_revision, real_revision).each do |line| %>
+<% log_output.each do |line| %>
   <%= line.join(' ') %>
+<% end %>
 <% end %>

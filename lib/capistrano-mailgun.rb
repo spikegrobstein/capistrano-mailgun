@@ -105,6 +105,18 @@ module Capistrano
       end.uniq
     end
 
+    # git log between +first_ref+ to +last_ref+
+    def log_output(first_ref, last_ref)
+      return @log_output unless @log_output.nil?
+
+      log_output = run_locally("git log --oneline #{ first_ref }..#{ last_ref }")
+
+      @log_output = log_output = log_output.split("\n").map do |line|
+        fields = line.split("\s", 2)
+        [ fields[0], fields[1] ]
+      end
+    end
+
     private
 
     def default_deploy_text_template_path
@@ -148,19 +160,6 @@ module Capistrano
     # builds the Mailgun API URI from the given options.
     def build_mailgun_uri(mailgun_api_key, mailgun_domain)
       "https://api:#{ mailgun_api_key }@api.mailgun.net/v2/#{ mailgun_domain }/messages"
-    end
-
-
-    # git log between +first_ref+ to +last_ref+
-    def log_output(first_ref, last_ref)
-      return @log_output unless @log_output.nil?
-
-      log_output = run_locally("git log --oneline #{ first_ref }..#{ last_ref }")
-
-      @log_output = log_output = log_output.split("\n").map do |line|
-        fields = line.match /^(\w{7,})\s+(.+?)$/
-        [ fields[0], fields[1] ]
-      end
     end
 
   end
