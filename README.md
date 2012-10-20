@@ -292,4 +292,4 @@ paths to your own templates will signal mailgun to use those. Setting either var
 
 ## License
 
-`Capistrano::Mailgun` is (c) 2012 Spike Grobstein and licensed under the MIT License. See `LICENSE` file.
+`Capistrano::Mailgun` is &copy;2012 Spike Grobstein and licensed under the MIT License. See `LICENSE` file.
