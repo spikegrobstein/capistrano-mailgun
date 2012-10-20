@@ -63,7 +63,7 @@
 <body>
 
   <h1>
-    <%= fetch(:stage, '').capitalize %> <%= application.capitalize %> deployment completed!
+    <%= fetch(:stage, '').to_s.capitalize %> <%= application.capitalize %> deployment completed!
   </h2>
 
   <div class="section">
