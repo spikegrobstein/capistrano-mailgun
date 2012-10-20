@@ -103,7 +103,7 @@
         <dd><%= fetch(:latest_revision, 'N/A') %></dd>
 
         <dt>Release:</dt>
-        <dd><%= File.basename fetch(:current_release) %></dd>
+        <dd><%= fetch(:release_name, 'N/A') %></dd>
 
       </dl>
 
@@ -119,17 +119,7 @@
       <h2>Log:</h2>
 
       <ul>
-        <%
-            log_output = run_locally("git log --oneline | head -20")
-            if log_output.strip.length == 0
-              log_output = "NO CHANGES SINCE LAST COMMIT?"
-
-            else
-              log_output = log_output.split("\n").map { |line| line.strip.split("\s", 2) }
-            end
-
-          %>
-        <% log_output.each do |line| %>
+        <% log_output(latest_revision, real_revision).each do |line| %>
           <li>
             <% if fetch(:github_url, nil) %>
             <a href="<%= github_url %>/commit/<%= line[0] %>"><%= line[0] %></a>

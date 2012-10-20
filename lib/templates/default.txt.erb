@@ -9,18 +9,12 @@ Repository:  <%= fetch(:repository, 'N/A') %>
 
 <% if fetch(:branch, nil) %>Ref:         <%= branch %><% end %>
 Sha1:        <%= fetch(:latest_revision, 'N/A') %>
-Release:     <%= File.basename( fetch(:current_release) ) %>
+Release:     <%= fetch(:release_name, 'N/A') %>
 
 <% if fetch(:url, nil) %>WWW:         <%= fetch(:url) %><% end %>
 
 Log:
 ---------------------------------------------------------------------------------
-<%=
-
-    log_output = run_locally("git log --oneline | head -20")
-    if log_output.strip.length == 0
-      log_output = "NO CHANGES SINCE LAST COMMIT?"
-    end
-
-  log_output
-%>
+<% log_output(latest_revision, real_revision).each do |line| %>
+  <%= line.join(' ') %>
+<% end %>
