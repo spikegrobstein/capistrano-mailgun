@@ -114,10 +114,12 @@ The email address that your notifications will appear to come from (by default).
 
 ### mailgun_recipients (required for notify_of_deploy)
 
-An array of email addresses who should recieve a notification when a deployment completes.
+The email address as a string or an array of email addresses who should recieve an email from `notify_of_deploy`.
 
 You can optionally only specify just the part of the email address before the @ and `Capistrano::Mailgun` will
 automatically append the `mailgun_recipient_domain` to it. See `mailgun_recipient_domain`.
+
+If you omit the domain and don't specify `mailgun_recipient_domain`, a error will be raised.
 
 ### mailgun_cc
 
@@ -133,7 +135,7 @@ eail addresses.
 
 ### mailgun_text_template (required for notify_of_deploy)
 
-This is the path to the ERB template that `Capistrano::Mailgun` will use to create the text body of
+This is the path to the ERB template that `mailgun.notify_of_deploy` will use to create the text body of
 your email. This is only required if you do not use the `mailgun_html_template` variable. You can
 specify both text and html templates and the emails will contain the proper bodies where the client
 supports it.
@@ -154,6 +156,19 @@ below for more information.
 
 The domain that will be automatically appended to incomplete email addresses in the `mailgun_recipients`.
 
+Example:
+
+    set :mailgun_recipient_domain, 'example.com'
+    set :mailgun_recipients, [ 'alice', 'bob', 'carl@contractors.net' ]
+
+When an email is sent from `Capistrano::Mailgun`, the recipients will be processed and the email will be sent to:
+
+ * alice@example.com
+ * bob@example.com
+ * carl@contractors.net
+
+If `mailgun_recipient_domain` is not set, `Capistrano::Mailgun` will raise an error.
+
 ### mailgun_subject
 
 The subject to be used in deployment emails. This defaults to:
@@ -168,8 +183,8 @@ Setting this variable yourself will override the default.
 
 ### github_url
 
-If your project is hosted on Github and you'd like to have links to the github repository in the deployment
-notifications, update this. It should be in the following format:
+If your project is hosted on Github and you'd like to have links to the Github repository in the deployment
+notifications, set this. It should be in the following format:
 
     https://github.com/USERNAME/PROJECT
 
@@ -181,15 +196,15 @@ was deployed.
 ### mailgun_notify
 
 This task is defined strictly for convenience in defining Capistrano hooks and for sending a notification
-from the commandline.
+from the commandline. All it does is run `mailgun.notify_of_deploy` on your local machine.
 
-Normally, you'd want to have an after-deploy hook defined as follows:
+Normally, you'd want to have an after-hook on `deploy` defined as follows:
 
     after :deploy, 'mailgun_notify'
 
 ## Function API
 
-`Capistrano::Mailgun` has a couple of methods to enable you to send emails easily. The following are the functions:
+`Capistrano::Mailgun` has a couple of functions to simplify some common tasks. The following are the functions:
 
 ### mailgun.build_recipients( recipients, default_domain=nil )
 
@@ -199,14 +214,14 @@ this function directly as `Capistrano::Mailgun` calls it implicitely on your `to
 the Mailgun API.
 
 You can also pass an alternate `default_domain`. This is useful if you're not using the global `mailgun_recipient_domain`
-Capistrano variable of if you want to override the behavior in this one use-case. `mailgun.build_recipients` will always
-choose the specified `default_domain` over `mailgun_recipient_domain`.
+Capistrano variable of if you want to override the behavior in a specific case. `mailgun.build_recipients` will always
+choose the specified `default_domain` passed to the function over the Capistrano variable `mailgun_recipient_domain`.
 
 ### mailgun.notify_of_deploy
 
-This is a convenience function to send an email via the Mailgun api using your Capistrano variables for
-basic configuration. It will use either/or `mailgun_html_template` and `mailgun_text_template` to generate the
-email body, `mailgun_recipients` for who to address the email to, `mailgun_from` for the reply-to field
+This is a convenience function to send an email via the Mailgun api using your Capistrano variables for declarative
+configuration. It will use `mailgun_html_template` and `mailgun_text_template` to generate the email body when set,
+`mailgun_recipients` for who to address the email to, `mailgun_from` for the reply-to field
 of the email and `mailgun_subject` for the subject of the email.
 
 See Quickstart, above, for an example.
@@ -225,9 +240,13 @@ This function also takes the following additional options:
  * `:text_template` -- a path to an ERB template for the text body of the email.
  * `:html_template` -- a path to an ERB template for the HTML body of the email.
 
-The templates will have access to all of your Capistrano variables.
+The templates will have access to all of your Capistrano variables and anything else that Capistrano can see
+such as methods and Capistrano plugins (including `Capistrano::Mailgun`).
 
-Of course, you can also pass `:text` and `:html` options for the exact text/html bodies of the sent emails.
+Of course, you can also pass `:text` and `:html` options for the exact text/html bodies of the sent emails as they
+will be passed directly to the Mailgun API.
+
+No validation is done from this function, so errors from Mailgun will percolate up to you.
 
 ### deployer_username
 
@@ -237,7 +256,7 @@ actually did the deployment.
 
 ## Built-in Templates
 
-`Capistrano::Mailgun` comes with `notify_of_deploy` default built-in templates. There are both HTML and Text
+`Capistrano::Mailgun` comes with built-in templates for use with `mailgun.notify_of_deploy`. There are both HTML and Text
 templates which include information such as the sha1 and ref that has been deployed as well as logs of the last
 commits. Use of the Capistrano variable `github_url` will enable links back to the repository and direct links
 to the commits in the log.
@@ -245,10 +264,17 @@ to the commits in the log.
 These files live inside the gem in the `lib/templates` directory, so feel free to pull them out, copy into
 your project and customize.
 
+By default, `mailgun.notify_of_deploy` sets `mailgun_text_template` to `:default_text` and `mailgun_html_template`
+to `:default_html`, which signals it to use these built-in templates. Overriding those variables with absolute
+paths to your own templates will signal mailgun to use those. Setting either variable to `nil` will prevent
+`mailgun.notify_of_deploy` from using anything for either the text or HTML portion of the email.
+
 ## Limitations
 
  * Only supports ERB for templates. This should be changed in a future release.
  * Currently requires that ERB templates are on the filesystem. Future releases may allow for inline templates.
+ * Support for VCSs other than `:git` is lacking. `Capistrano::Mailgun` has been built with git and Github in mind.
+   If anyone has interest in adding support for other another version control system, that would be great.
 
 ## Contributing
 
@@ -266,4 +292,4 @@ your project and customize.
 
 ## License
 
-`Capistrano::Mailgun` is licensed under the MIT License. See `LICENSE` file.
+`Capistrano::Mailgun` is (c) 2012 Spike Grobstein and licensed under the MIT License. See `LICENSE` file.
