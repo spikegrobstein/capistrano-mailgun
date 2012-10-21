@@ -114,6 +114,14 @@
       </dl>
       <% end %>
     </div>
+
+    <% if fetch(:mailgun_message, nil) %>
+    <div id="mailgun_message" class="section">
+      <h2>Custom Message:</h2>
+      <%= fetch(:mailgun_message) %>
+    </div>
+    <% end %>
+
 <% log_output = mailgun.log_output(latest_revision, real_revision) %>
 <% unless log_output.count == 0 %>
     <div class="log">

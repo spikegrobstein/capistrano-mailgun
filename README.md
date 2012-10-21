@@ -181,6 +181,16 @@ In the event that you're using multistage, it will include that:
 
 Setting this variable yourself will override the default.
 
+### mailgun_message
+
+An optional message can be specified to be included in the email. This is used inside the default templates,
+so if you use your own templates, you'll have to include support for this variable yourself.
+
+The purpose of this variable is to be set when calling capistrano so you can have a custom, per-deploy message.
+You would call it in the following manner:
+
+    cap deploy -s mailgun_message="Fixes that really nasty bug where our site does not work"
+
 ### github_url
 
 If your project is hosted on Github and you'd like to have links to the Github repository in the deployment

@@ -139,6 +139,25 @@ describe "Integration testing for Capistrano::Mailgun" do
         end
       end
 
+      context "when using mailgun_message" do
+        it "should include a mailgun_message if set" do
+          config.load do
+            set :mailgun_message, '_custom_message_'
+          end
+
+          RestClient.should_receive(:post) do |url, opts|
+            opts[:text].should include('_custom_message_')
+            opts[:html].should include('_custom_message_')
+          end
+        end
+
+        it "should not have the custom_message div if no custom_message is set" do
+          RestClient.should_receive(:post) do |url, opts|
+            opts[:html].should_not include('id="mailgun_message"')
+          end
+        end
+      end
+
     end
 
   end

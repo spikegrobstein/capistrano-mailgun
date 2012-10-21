@@ -10,6 +10,10 @@ Repository:  <%= fetch(:repository, 'N/A') %>
 <% if fetch(:branch, nil) %>Ref:         <%= branch %><% end %>
 Sha1:        <%= fetch(:latest_revision, 'N/A') %>
 Release:     <%= fetch(:release_name, 'N/A') %>
+<% if fetch(:mailgun_message, nil) %>
+  Custom Message:
+  <%= fetch(:mailgun_message) %>
+<% end %>
 
 <% if fetch(:url, nil) %>WWW:         <%= fetch(:url) %><% end %>
 <% log_output = mailgun.log_output(latest_revision, real_revision) %>
