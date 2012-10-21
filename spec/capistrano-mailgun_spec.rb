@@ -12,7 +12,7 @@ describe Capistrano::Mailgun do
     RestClient.stub(:post)
   end
 
-  let!(:mailgun) { config.mailgun }
+  let(:mailgun) { config.mailgun }
 
   context '#buid_recipients' do
     let(:email_1) { 'spike@example.com' }
