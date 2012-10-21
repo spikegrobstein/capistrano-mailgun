@@ -93,7 +93,7 @@ module Capistrano
       send_email options
     end
 
-    # Given an array of +recipients+, it returns a comma-delimited, deduplicated string, suitable for populating the +to+ field of a Mailgun API call.
+    # Given an array of +recipients+, it returns a comma-delimited, deduplicated string, suitable for populating the +to+, +cc+, and +bcc+ fields of a Mailgun API call.
     # Optionally, it will take a +default_domain+ which will automatically be appended to any unqualified recipients (eg: 'spike' => 'spike@example.com')
     def build_recipients(recipients, default_domain=nil)
       [*recipients].map do |r|
@@ -102,7 +102,7 @@ module Capistrano
         else
           "#{ r }@#{ default_domain || fetch(:mailgun_recipient_domain) }"
         end
-      end.uniq
+      end.uniq.sort.join(',')
     end
 
     # git log between +first_ref+ to +last_ref+

@@ -23,15 +23,15 @@ describe Capistrano::Mailgun do
     end
 
     it "should accept a single recipient (not an array)" do
-      build_recipients(email_1).should == [email_1]
+      build_recipients(email_1).should == email_1
     end
 
     it "should accept an array of recipeints" do
-      build_recipients( [email_1, email_2] ).should == [email_1, email_2]
+      build_recipients( [email_1, email_2] ).should == [email_1, email_2].sort.join(',')
     end
 
     it "should deduplicate emails in the recipients" do
-      build_recipients( [email_1, email_2, email_1] ).should == [email_1, email_2]
+      build_recipients( [email_1, email_2, email_1] ).should == [email_1, email_2].sort.join(',')
     end
 
     context "when working with unqualified email addresses" do
@@ -42,11 +42,11 @@ describe Capistrano::Mailgun do
       end
 
       it "should add the mailgun_recipient_domain to any unqualified email addresses" do
-        build_recipients( %w( spike ) ).should == ['spike@another.com']
+        build_recipients( %w( spike ) ).should == 'spike@another.com'
       end
 
       it "should accept a mix of qualified and unqualified email addresses" do
-        build_recipients( [email_1, 'spike']).should == [email_1, 'spike@another.com']
+        build_recipients( [email_1, 'spike']).should == [email_1, 'spike@another.com'].sort.join(',')
       end
 
     end
@@ -59,7 +59,7 @@ describe Capistrano::Mailgun do
 
       it "should use the passed default_domain over the mailgun_recipient_domain if it's passed" do
         config.load { set :mailgun_recipient_domain, 'example.com' }
-        build_recipients( ['spike'], 'awesome.com' ).should == ['spike@awesome.com']
+        build_recipients( ['spike'], 'awesome.com' ).should == 'spike@awesome.com'
       end
     end
 

@@ -45,15 +45,6 @@ describe "Integration testing for Capistrano::Mailgun" do
         mailgun.notify_of_deploy
       end
 
-      it "should allow overriding of subject" do
-        config.load do
-          set :mailgun_subject, 'Test subject'
-        end
-
-        RestClient.should_receive(:post) do |url, opts|
-          opts[:subject].should == 'Test subject'
-        end
-      end
 
       it "should allow user to unset text template" do
         config.load do
@@ -75,7 +66,77 @@ describe "Integration testing for Capistrano::Mailgun" do
           opts.has_key?(:text).should be_true
           opts.has_key?(:html).should be_false
         end
+      end
 
+      context "email subject" do
+
+        it "should include the stage if that's defined" do
+          config.load do
+            set :stage, 'production'
+          end
+
+          RestClient.should_receive(:post) do |url, opts|
+            opts[:subject].should match(/\bproduction\b/i)
+          end
+        end
+
+        it "should allow overriding of subject" do
+          config.load do
+            set :mailgun_subject, 'Test subject'
+          end
+
+          RestClient.should_receive(:post) do |url, opts|
+            opts[:subject].should == 'Test subject'
+          end
+        end
+      end
+
+      it "should use mailgun_from for :from field" do
+        RestClient.should_receive(:post) do |url, opts|
+          opts[:from].should == 'noreply@example.com'
+        end
+      end
+
+      it "should use mailgun_recipients for :to field" do
+        RestClient.should_receive(:post) do |url, opts|
+          opts[:to].should == 'everyone@example.com'
+        end
+      end
+
+      context "when using mailgun_cc" do
+        it "should use CC field if it's set" do
+          config.load do
+            set :mailgun_cc, 'cc@example.com'
+          end
+
+          RestClient.should_receive(:post) do |url, opts|
+            opts[:cc].should == 'cc@example.com'
+          end
+        end
+
+        it "should not use CC field if it's not set" do
+          RestClient.should_receive(:post) do |url, opts|
+            opts.has_key?(:cc).should be_false
+          end
+        end
+      end
+
+      context "when using mailgun_bcc" do
+        it "should use bcc field if it's set" do
+          config.load do
+            set :mailgun_bcc, 'bcc@example.com'
+          end
+
+          RestClient.should_receive(:post) do |url, opts|
+            opts[:bcc].should == 'bcc@example.com'
+          end
+        end
+
+        it "should not use bcc field if it's not set" do
+          RestClient.should_receive(:post) do |url, opts|
+            opts.has_key?(:bcc).should be_false
+          end
+        end
       end
 
     end
