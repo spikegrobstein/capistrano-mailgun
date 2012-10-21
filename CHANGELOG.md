@@ -1,6 +1,7 @@
 ## 2012-10-?? - v1.1.0
  * default subject now includes stage
  * built-in templates
+ * support for custom messages
 
 ## 2012-10-15 - v1.0.2
  * Minor release
