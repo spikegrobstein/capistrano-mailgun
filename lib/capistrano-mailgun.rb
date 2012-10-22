@@ -154,6 +154,12 @@ module Capistrano
       options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
       options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
 
+      # clean up the text template a little
+      if options[:text]
+        options[:text].gsub! /^ +/, ''
+        options[:text].gsub! /\n{3,}/, "\n\n"
+      end
+
       options
     end
 
