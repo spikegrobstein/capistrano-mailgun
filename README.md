@@ -285,6 +285,7 @@ paths to your own templates will signal mailgun to use those. Setting either var
  * Currently requires that ERB templates are on the filesystem. Future releases may allow for inline templates.
  * Support for VCSs other than `:git` is lacking. `Capistrano::Mailgun` has been built with git and Github in mind.
    If anyone has interest in adding support for other another version control system, that would be great.
+   Using this with a VCS other than Git may yeild unpredictable results.
 
 ## Contributing
 
