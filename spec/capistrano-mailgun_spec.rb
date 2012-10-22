@@ -178,7 +178,7 @@ describe Capistrano::Mailgun do
       context "when cc and bcc are included" do
         before do
 
-          ERB.stub!(:new => mock(:result => true))
+          ERB.stub!(:new => mock(:result => 'completed template'))
 
           config.load do
             set :application, 'some application'
