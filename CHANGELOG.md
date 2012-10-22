@@ -1,4 +1,4 @@
-## 2012-10-?? - v1.1.0
+## 2012-10-22 - v1.1.0
  * default subject now includes stage
  * built-in templates
  * support for custom messages
