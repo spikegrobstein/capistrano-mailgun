@@ -269,4 +269,27 @@ describe Capistrano::Mailgun do
 
   end
 
+  context "#log_output" do
+
+    context "when it raises an error" do
+
+      before do
+        mailgun.should_receive(:run_locally).and_raise(Capistrano::LocalArgumentError.new)
+      end
+
+      it "should only return a 1-element array if an error is returned from git-log" do
+        result = mailgun.log_output('a', 'b')
+
+        result.class.should == Array
+        result.length.should == 1
+      end
+
+      it "should capture the error and not raise if git-log fails" do
+        lambda { mailgun.log_output('a', 'b') }.should_not raise_error
+      end
+
+    end
+
+  end
+
 end

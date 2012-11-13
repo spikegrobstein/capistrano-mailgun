@@ -114,11 +114,15 @@ module Capistrano
     def log_output(first_ref, last_ref)
       return @log_output unless @log_output.nil?
 
-      log_output = run_locally("git log --oneline #{ first_ref }..#{ last_ref }")
+      begin
+        log_output = run_locally("git log --oneline #{ first_ref }..#{ last_ref }")
 
-      @log_output = log_output = log_output.split("\n").map do |line|
-        fields = line.split("\s", 2)
-        [ fields[0], fields[1] ]
+        @log_output = log_output = log_output.split("\n").map do |line|
+          fields = line.split("\s", 2)
+          [ fields[0], fields[1] ]
+        end
+      rescue
+        [ [ 'n/a', 'Log output not available.' ] ]
       end
     end
 
