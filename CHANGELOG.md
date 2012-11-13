@@ -1,3 +1,6 @@
+## 2012-11-?? - v1.2.0
+ * properly handle failures when running git-log
+
 ## 2012-10-22 - v1.1.0
  * default subject now includes stage
  * built-in templates
