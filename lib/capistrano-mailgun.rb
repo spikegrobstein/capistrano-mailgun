@@ -108,6 +108,9 @@ module Capistrano
     # git log between +first_ref+ to +last_ref+
     # memoizes the output so this function can be called multiple times without re-running
     # FIXME: memoization does not account for arguments
+    #
+    # returns an array of 2-element arrays in the form of
+    # [ ref, log_text ]
     def log_output(first_ref, last_ref)
       return @log_output unless @log_output.nil?
 
