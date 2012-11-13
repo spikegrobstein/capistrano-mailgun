@@ -95,6 +95,24 @@ above is just an example.
 
 Also, notice the use of `mailgun.build_recipients`. See documentation below for more information.
 
+## Disabling Emails
+
+If you want to prevent sending any email notifications for any reason, you can set the `mailgun_off`
+Capistrano variable either via the `set` command or with the `-s` commandline options when calling
+`cap`.
+
+If using the Capistrano multistage plugin, you can put the following into one of your stage files
+that you want to disable notifications for:
+
+    set :mailgun_off, true
+
+Or, when doing a normal deploy and you want to prevent notifications for this deploy, you can do the
+following:
+
+    cap deploy -s mailgun_off=1
+
+Heads up: Setting `mailgun_off` to **anything** will disable emails. This includes setting it to `false`.
+
 ## Capistrano Variables
 
 `Capistrano::Mailgun` leverages variables defined in Capistrano to reduce the amount of configuration
@@ -190,6 +208,14 @@ The purpose of this variable is to be set when calling capistrano so you can hav
 You would call it in the following manner:
 
     cap deploy -s mailgun_message="Fixes that really nasty bug where our site does not work"
+
+### mailgun_off
+
+Setting `mailgun_off` to any value, either via the `-s` commandline switch or with `set` in your recipe
+will completely disable any Mailgun notifications, regardless of whether they're sent with `mailgun.send_email`
+or with the built-in `mailgun_notify` task.
+
+See above `Disabling Emails` section for examples.
 
 ### github_url
 

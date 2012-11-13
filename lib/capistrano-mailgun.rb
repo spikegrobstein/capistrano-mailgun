@@ -57,6 +57,8 @@ module Capistrano
     # Supports all options that the Mailgun API supports. In addition, it also accepts:
     # * +:text_template+ -- the path to the template for the text body. It will be processed and interpolated and set the +text+ field when doing the API call.
     # * +:html_template+ -- the path to the template for the html body. It will be processed and interpolated and set the +html+ field when doing the API call.
+    #
+    # If +mailgun_off+ is set, this function will do absolutely nothing.
     def send_email(options)
       return if exists?(:mailgun_off)
       options = process_send_email_options(options)
