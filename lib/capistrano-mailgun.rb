@@ -58,6 +58,7 @@ module Capistrano
     # * +:text_template+ -- the path to the template for the text body. It will be processed and interpolated and set the +text+ field when doing the API call.
     # * +:html_template+ -- the path to the template for the html body. It will be processed and interpolated and set the +html+ field when doing the API call.
     def send_email(options)
+      return if exists?(:mailgun_off)
       options = process_send_email_options(options)
 
       RestClient.post build_mailgun_uri( mailgun_api_key, mailgun_domain ), options

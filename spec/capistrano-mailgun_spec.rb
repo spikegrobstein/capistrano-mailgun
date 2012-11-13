@@ -140,6 +140,37 @@ describe Capistrano::Mailgun do
       end
     end
 
+    context "mailgun_off" do
+
+      context "when it is set" do
+        before do
+          config.load do
+            set :mailgun_off, true
+          end
+
+          mailgun.stub!(:proces_send_email_options => true)
+        end
+
+        it "should not send emails when mailgun_off is set" do
+          RestClient.should_not_receive(:post)
+          mailgun.send_email({})
+        end
+
+      end
+
+      context "when it is not set" do
+        before do
+          mailgun.stub!(:process_send_email_options => true)
+        end
+
+        it "should send emails when mailgun_off is not set" do
+          RestClient.should_receive(:post)
+          mailgun.send_email({})
+        end
+      end
+
+    end
+
   end
 
   context "#notify_of_deploy" do
