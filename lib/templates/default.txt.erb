@@ -16,6 +16,11 @@ Release:     <%= fetch(:release_name, 'N/A') %>
 <% end %>
 
 <% if fetch(:url, nil) %>WWW:         <%= fetch(:url) %><% end %>
+<% if fetch(:mailgun_include_servers, false) %>
+Deployed to the following servers:
+<% fetch(:mailgun_deploy_servers).each do |server| %> - <%= server.host %>
+<% end %>
+<% end %>
 <% log_output = mailgun.log_output(latest_revision, real_revision) %>
 <% unless log_output.count == 0 %>
 Log:

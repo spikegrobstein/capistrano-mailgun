@@ -124,6 +124,17 @@
     </div>
     <% end %>
 
+    <% if fetch(:mailgun_include_servers, false) %>
+    <div id="mailgun_servers" class="section">
+      <h2>Deployed to:</h2>
+      <ul>
+        <% fetch(:mailgun_deploy_servers).each do |server| %>
+          <li><%= server.host %></l>
+        <% end %>
+      </ul>
+    </div>
+    <% end %>
+
 <% log_output = mailgun.log_output(latest_revision, real_revision) %>
 <% unless log_output.count == 0 %>
     <div class="log">

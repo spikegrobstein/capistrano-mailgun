@@ -264,20 +264,27 @@ describe Capistrano::Mailgun do
   end
 
   context "collecting deployment servers" do
+    let(:server_hostnames) { config.fetch(:mailgun_deploy_servers).map(&:host) }
+
+    before do
+      config.load do
+        load 'deploy'
+
+        set :application, 'rspec-app'
+        set :repository, 'foo'
+
+        set :latest_revision, ''
+        set :release_name, ''
+        set :real_revision, ''
+
+        role :web, 'server-a'
+        role :app, 'server-b'
+
+        role :web, 'server-c', :no_release => true
+      end
+    end
 
     context "#mailgun_deploy_servers" do
-      let(:server_hostnames) { config.fetch(:mailgun_deploy_servers).map(&:host) }
-
-      before do
-        config.load do
-          load 'deploy'
-
-          role :web, 'server-a'
-          role :app, 'server-b'
-
-          role :web, 'server-c', :no_release => true
-        end
-      end
 
       it "should find servers that are included in 'deploy'" do
         server_hostnames.count.should == 2
@@ -288,6 +295,48 @@ describe Capistrano::Mailgun do
       it "should not find servers that are not included in 'deploy'" do
         server_hostnames.should_not include('server-c')
       end
+    end
+
+    context "templates" do
+      let(:result) { mailgun.send(:process_send_email_options, { :text_template => :deploy_text, :html_template => :deploy_html }) }
+
+      before do
+        require 'capistrano/recipes/deploy/scm/git'
+        Capistrano::Deploy::SCM::Git.any_instance.stub(:query_revision => '')
+        mailgun.stub!(:log_output => [])
+      end
+
+      context "when mailgun_include_servers is set to true" do
+        before do
+          config.load { set :mailgun_include_servers, true }
+        end
+
+        it "should include the servers in the text template" do
+          result[:text].should match('server-a')
+        end
+
+        it "should include the servers in the html template" do
+          result[:html].should match('server-a')
+          result[:html].should match('mailgun_servers')
+        end
+
+      end
+
+      context "when mailgun_include_servers is set to false" do
+        before do
+          config.load { set :mailgun_include_servers, false }
+        end
+
+        it "should not include the servers in the text template" do
+          result[:text].should_not match('server-a')
+        end
+
+        it "should not include the servers in the html template" do
+          result[:html].should_not match('server-a')
+          result[:html].should_not match('mailgun_servers')
+        end
+      end
+
     end
 
   end
