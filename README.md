@@ -217,6 +217,18 @@ or with the built-in `mailgun_notify` task.
 
 See above `Disabling Emails` section for examples.
 
+### mailgun_include_servers
+
+Tnis variable is set to `false` by default. Setting to true will add the list of servers that are included in
+the `deploy:update_code` task, which is any server that got code deployed to it.
+
+This is useful for when you deploy to only a subset of servers using Capistrano's `HOSTS` or `ROLES` environment
+variables in your deploy.
+
+To enable the inclusion of the server list, you can add the following to your deployment configuration:
+
+    set :mailgun_include_servers, true
+
 ### github_url
 
 If your project is hosted on Github and you'd like to have links to the Github repository in the deployment
