@@ -14,26 +14,32 @@ module Capistrano
 
         Capistrano.plugin :mailgun, Capistrano::Mailgun
 
-        set(:mailgun_subject) do
+        def _cset(name, *args, &block)
+          unless exists?(name)
+            set(name, *args, &block)
+          end
+        end
+
+        _cset(:mailgun_subject) do
           [ "[Deployment]", fetch(:stage, '').to_s.capitalize, fetch(:application, '').capitalize, 'deploy completed'].join(' ').gsub(/\s+/, ' ')
         end
 
-        set(:mailgun_api_key)           { abort "Please set mailgun_api_key accordingly" }
-        set(:mailgun_domain)            { abort "Please set mailgun_domain accordingly" }
-        set(:mailgun_from)              { abort "Please set mailgun_from to your desired From field" }
-        set(:mailgun_recipients)        { abort "Please specify mailgun_recipients" }
-        set(:mailgun_recipient_domain)  { abort "Please set mailgun_recipient_domain accordingly" }
+        _cset(:mailgun_api_key)           { abort "Please set mailgun_api_key accordingly" }
+        _cset(:mailgun_domain)            { abort "Please set mailgun_domain accordingly" }
+        _cset(:mailgun_from)              { abort "Please set mailgun_from to your desired From field" }
+        _cset(:mailgun_recipients)        { abort "Please specify mailgun_recipients" }
+        _cset(:mailgun_recipient_domain)  { abort "Please set mailgun_recipient_domain accordingly" }
 
         # some internal variables that mailgun will use as the app runs
-        set(:mailgun_deploy_servers)    { find_servers_for_task( find_task('deploy:update_code') ) }
+        _cset(:mailgun_deploy_servers)    { find_servers_for_task( find_task('deploy:update_code') ) }
 
         # set these to nil to not use, or set to path to your custom template
-        set :mailgun_text_template, :deploy_text
-        set :mailgun_html_template, :deploy_html
+        _cset :mailgun_text_template, :deploy_text
+        _cset :mailgun_html_template, :deploy_html
 
-        set :mailgun_include_servers, false
+        _cset :mailgun_include_servers, false
 
-        set(:deployer_username) do
+        _cset(:deployer_username) do
           if fetch(:scm, '').to_sym == :git
             `git config user.name`.chomp
           else
