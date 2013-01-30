@@ -263,6 +263,35 @@ describe Capistrano::Mailgun do
 
   end
 
+  context "collecting deployment servers" do
+
+    context "#mailgun_deploy_servers" do
+      let(:server_hostnames) { config.fetch(:mailgun_deploy_servers).map(&:host) }
+
+      before do
+        config.load do
+          load 'deploy'
+
+          role :web, 'server-a'
+          role :app, 'server-b'
+
+          role :web, 'server-c', :no_release => true
+        end
+      end
+
+      it "should find servers that are included in 'deploy'" do
+        server_hostnames.count.should == 2
+        server_hostnames.should include('server-a')
+        server_hostnames.should include('server-b')
+      end
+
+      it "should not find servers that are not included in 'deploy'" do
+        server_hostnames.should_not include('server-c')
+      end
+    end
+
+  end
+
   context "#process_send_email_options" do
     let(:test_mailgun_domain) { 'example.com' }
 

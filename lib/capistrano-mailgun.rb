@@ -24,9 +24,14 @@ module Capistrano
         set(:mailgun_recipients)        { abort "Please specify mailgun_recipients" }
         set(:mailgun_recipient_domain)  { abort "Please set mailgun_recipient_domain accordingly" }
 
+        # some internal variables that mailgun will use as the app runs
+        set(:mailgun_deploy_servers)    { find_servers_for_task( find_task('deploy:update_code') ) }
+
         # set these to nil to not use, or set to path to your custom template
         set :mailgun_text_template, :deploy_text
         set :mailgun_html_template, :deploy_html
+
+        set :mailgun_include_servers, false
 
         set(:deployer_username) do
           if fetch(:scm, '').to_sym == :git
