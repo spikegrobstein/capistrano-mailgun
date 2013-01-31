@@ -47,6 +47,13 @@ module Capistrano
           end
         end
 
+        # before update_code, fetch the current revision
+        # this is needed to ensure that no matter when capistrano-mailgun fetches the commit logs that it
+        # has the correct starting point.
+        before 'deploy:update_code' do
+          set :mailgun_previous_revision, fetch(:current_revision, nil) # the revision that's currently deployed at this moment
+        end
+
         # default mailgun email tasks
         desc <<-DESC
           Send a mailgun deployment notification.
@@ -129,6 +136,8 @@ module Capistrano
       return @log_output unless @log_output.nil?
 
       begin
+        raise "Ref missing" if first_ref.nil? || last_ref.nil? # jump to resque block.
+
         log_output = run_locally("git log --oneline #{ first_ref }..#{ last_ref }")
 
         @log_output = log_output = log_output.split("\n").map do |line|
