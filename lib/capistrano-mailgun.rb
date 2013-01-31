@@ -47,6 +47,9 @@ module Capistrano
           end
         end
 
+        # before update_code, fetch the current revision
+        # this is needed to ensure that no matter when capistrano-mailgun fetches the commit logs that it
+        # has the correct starting point.
         before 'deploy:update_code' do
           set :mailgun_current_revision, fetch(:current_revision, nil) # the revision that's currently deployed at this moment
         end
