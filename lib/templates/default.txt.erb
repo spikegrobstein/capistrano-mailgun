@@ -21,7 +21,7 @@ Deployed to the following servers:
 <% fetch(:mailgun_deploy_servers).each do |server| %> - <%= server.host %>
 <% end %>
 <% end %>
-<% log_output = mailgun.log_output(latest_revision, real_revision) %>
+<% log_output = mailgun.log_output(mailgun_current_revision, fetch(:real_revision, nil)) %>
 <% unless log_output.count == 0 %>
 Log:
 ---------------------------------------------------------------------------------

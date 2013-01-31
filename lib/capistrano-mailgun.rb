@@ -47,6 +47,8 @@ module Capistrano
           end
         end
 
+        _cset :mailgun_current_revision, fetch(:current_revision, nil) # the revision that's currently deployed at this moment
+
         # default mailgun email tasks
         desc <<-DESC
           Send a mailgun deployment notification.
