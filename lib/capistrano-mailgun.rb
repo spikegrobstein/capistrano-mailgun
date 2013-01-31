@@ -47,7 +47,7 @@ module Capistrano
           end
         end
 
-        on :load do
+        before 'deploy:update_code' do
           set :mailgun_current_revision, fetch(:current_revision, nil) # the revision that's currently deployed at this moment
         end
 
@@ -133,6 +133,8 @@ module Capistrano
       return @log_output unless @log_output.nil?
 
       begin
+        raise "Ref missing" if first_ref.nil? || last_ref.nil? # jump to resque block.
+
         log_output = run_locally("git log --oneline #{ first_ref }..#{ last_ref }")
 
         @log_output = log_output = log_output.split("\n").map do |line|
