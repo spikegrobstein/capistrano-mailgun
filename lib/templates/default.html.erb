@@ -141,7 +141,7 @@
       <h2>Log:</h2>
 
       <ul>
-        <% mailgun.log_output(latest_revision, real_revision).each do |line| %>
+        <% log_output.each do |line| %>
           <li>
             <% if fetch(:github_url, nil) && line[0] != 'n/a' %>
             <a href="<%= github_url %>/commit/<%= line[0] %>"><%= line[0] %></a>
