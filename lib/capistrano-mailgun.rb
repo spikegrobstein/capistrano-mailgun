@@ -47,7 +47,7 @@ module Capistrano
           end
         end
 
-        on :start do
+        on :load do
           set :mailgun_current_revision, fetch(:current_revision, nil) # the revision that's currently deployed at this moment
         end
 
