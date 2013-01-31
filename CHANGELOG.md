@@ -2,6 +2,7 @@
  * added option to include list of servers deployed to in email notification
  * fixed a bug where requiring `capistrano-mailgun` after you load `deploy.rb` would cause variables to be overwritten with defaults.
  * don't call `mailgun.log_output` twice in html template
+ * fixed an issue where, depending on when `mailgun_notify` is called, it may or may not use the correct revisions when building the commit log.
 
 ## 2012-11-?? - v1.2.0
  * properly handle failures when running git-log
