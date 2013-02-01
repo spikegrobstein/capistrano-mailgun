@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.expand_path('../lib/capistrano-mailgun/version', __FILE__)
+$:.unshift File.expand_path('../lib', __FILE__)
+require 'capistrano-mailgun/version'
 
 Gem::Specification.new do |gem|
   gem.authors       = ["Spike Grobstein"]
