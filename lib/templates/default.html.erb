@@ -135,7 +135,7 @@
     </div>
     <% end %>
 
-<% log_output = mailgun.log_output(mailgun_previous_revision, fetch(:real_revision, nil)) %>
+<% log_output = mailgun.log_output(fetch(:mailgun_previous_revision, nil), fetch(:real_revision, nil)) %>
 <% unless log_output.count == 0 %>
     <div class="log">
       <h2>Log:</h2>

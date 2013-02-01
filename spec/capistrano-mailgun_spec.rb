@@ -273,6 +273,7 @@ describe Capistrano::Mailgun do
         set :application, 'rspec-app'
         set :repository, 'foo'
 
+        set :current_revision, nil
         set :latest_revision, ''
         set :release_name, ''
         set :real_revision, ''
