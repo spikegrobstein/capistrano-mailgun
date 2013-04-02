@@ -1,4 +1,5 @@
 require "capistrano-mailgun/version"
+require 'capnotify'
 require 'restclient'
 require 'erb'
 
@@ -38,21 +39,6 @@ module Capistrano
         _cset :mailgun_html_template, :deploy_html
 
         _cset :mailgun_include_servers, false
-
-        _cset(:deployer_username) do
-          if fetch(:scm, '').to_sym == :git
-            `git config user.name`.chomp
-          else
-            `whoami`.chomp
-          end
-        end
-
-        # before update_code, fetch the current revision
-        # this is needed to ensure that no matter when capistrano-mailgun fetches the commit logs that it
-        # has the correct starting point.
-        before 'deploy:update_code' do
-          set :mailgun_previous_revision, fetch(:current_revision, nil) # the revision that's currently deployed at this moment
-        end
 
         # default mailgun email tasks
         desc <<-DESC
@@ -126,29 +112,6 @@ module Capistrano
       end.uniq.sort.join(',')
     end
 
-    # git log between +first_ref+ to +last_ref+
-    # memoizes the output so this function can be called multiple times without re-running
-    # FIXME: memoization does not account for arguments
-    #
-    # returns an array of 2-element arrays in the form of
-    # [ ref, log_text ]
-    def log_output(first_ref, last_ref)
-      return @log_output unless @log_output.nil?
-
-      begin
-        raise "Ref missing" if first_ref.nil? || last_ref.nil? # jump to resque block.
-
-        log_output = run_locally("git log --oneline #{ first_ref }..#{ last_ref }")
-
-        @log_output = log_output = log_output.split("\n").map do |line|
-          fields = line.split("\s", 2)
-          [ fields[0], fields[1] ]
-        end
-      rescue
-        [ [ 'n/a', 'Log output not available.' ] ]
-      end
-    end
-
     private
 
     def default_deploy_text_template_path
@@ -183,14 +146,16 @@ module Capistrano
       options[:cc] = build_recipients(options[:cc]) unless options[:cc].nil?
       options[:bcc] = build_recipients(options[:bcc]) unless options[:bcc].nil?
 
-      options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
-      options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
+      options[:text] = fetch(:capnotify_deployment_notification_text)
+      options[:html] = fetch(:capnotify_deployment_notification_html)
+      # options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
+      # options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
 
       # clean up the text template a little
-      if options[:text]
-        options[:text].gsub! /^ +/, ''
-        options[:text].gsub! /\n{3,}/, "\n\n"
-      end
+      # if options[:text]
+        # options[:text].gsub! /^ +/, ''
+        # options[:text].gsub! /\n{3,}/, "\n\n"
+      # end
 
       options
     end
