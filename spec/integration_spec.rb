@@ -47,9 +47,7 @@ describe "Integration testing for Capistrano::Mailgun" do
 
 
       it "should allow user to unset text template" do
-        config.load do
-          set :mailgun_text_template, nil
-        end
+        config.set :capnotify_deployment_notification_text_template_path, nil
 
         RestClient.should_receive(:post) do |url, opts|
           opts.has_key?(:text).should be_false
@@ -58,9 +56,7 @@ describe "Integration testing for Capistrano::Mailgun" do
       end
 
       it "should allow user to unset html template" do
-        config.load do
-          set :mailgun_html_template, nil
-        end
+        config.set :capnotify_deployment_notification_html_template_path, nil
 
         RestClient.should_receive(:post) do |url, opts|
           opts.has_key?(:text).should be_true
@@ -141,11 +137,10 @@ describe "Integration testing for Capistrano::Mailgun" do
 
       context "when using mailgun_message" do
         it "should include a mailgun_message if set" do
-          config.load do
-            set :mailgun_message, '_custom_message_'
-          end
+          config.set :mailgun_message, '_custom_message_'
 
           RestClient.should_receive(:post) do |url, opts|
+            binding.pry
             opts[:text].should include('_custom_message_')
             opts[:html].should include('_custom_message_')
           end

@@ -1,5 +1,4 @@
 require "capistrano-mailgun/version"
-require 'capnotify'
 require 'restclient'
 
 module Capistrano
@@ -10,6 +9,7 @@ module Capistrano
     # the library in a Capistrano recipe.
     def self.load_into(config)
       config.load do
+        require 'capnotify'
 
         Capistrano.plugin :mailgun, Capistrano::Mailgun
 

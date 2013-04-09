@@ -8,7 +8,6 @@ describe Capistrano::Mailgun do
 
   before do
     Capistrano::Mailgun.load_into(config)
-    Capnotify.load_into(config)
 
     config.load do
       set :application, 'testapp'
@@ -313,59 +312,8 @@ describe Capistrano::Mailgun do
       config.load { set :mailgun_domain, 'example.com' }
     end
 
-    it "should set text to the rendered text template if text_template is passed" do
-      config.load do
-        set :capnotify_deployment_notification_text_template_path, fixture_path('text_body.erb')
-      end
-      result = mailgun.send(:process_send_email_options)
-
-      result[:text].should include(test_mailgun_domain)
-      result[:text].should_not include('<%=')
-    end
-
-    it "should not change text if no text_template is passed" do
-      ERB.should_not_receive(:new)
-      File.should_not_receive(:open)
-
-      mailgun.send(:process_send_email_options, :text => 'normal text')[:text].should == 'normal text'
-    end
-
-    it "should set html to the rendered html template if html_template is passed" do
-      result = mailgun.send(:process_send_email_options, :html_template => fixture_path('html_body.erb'))
-
-      result[:html].should include(test_mailgun_domain)
-      result[:html].should_not include('<%=')
-    end
-
-    it "should not change html if no html_template is passed" do
-      ERB.should_not_receive(:new)
-      File.should_not_receive(:open)
-
-      mailgun.send(:process_send_email_options, :html => 'normal html')[:html].should == 'normal html'
-    end
-
-  end
-
-  context "#log_output" do
-
-    context "when it raises an error" do
-
-      before do
-        mailgun.should_receive(:run_locally).and_raise(Capistrano::LocalArgumentError.new)
-      end
-
-      it "should only return a 1-element array if an error is returned from git-log" do
-        result = mailgun.log_output('a', 'b')
-
-        result.class.should == Array
-        result.length.should == 1
-      end
-
-      it "should capture the error and not raise if git-log fails" do
-        lambda { mailgun.log_output('a', 'b') }.should_not raise_error
-      end
-
-    end
+    it "should not return :text field if capnotify_deployment_notification_text_template is unset"
+    it "should not return :html field if capnotify_deployment_notification_html_template is unset"
 
   end
 
