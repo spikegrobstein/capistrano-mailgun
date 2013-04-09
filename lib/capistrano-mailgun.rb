@@ -1,8 +1,6 @@
 require "capistrano-mailgun/version"
 require 'capnotify'
 require 'restclient'
-require 'erb'
-
 
 module Capistrano
   module Mailgun
@@ -21,6 +19,9 @@ module Capistrano
           end
         end
 
+        # disable the capnotify splash screen
+        _cset :capnotify_hide_splash, true
+
         _cset(:mailgun_subject) do
           [ "[Deployment]", fetch(:stage, '').to_s.capitalize, fetch(:application, '').capitalize, 'deploy completed'].join(' ').gsub(/\s+/, ' ')
         end
@@ -32,13 +33,9 @@ module Capistrano
         _cset(:mailgun_recipient_domain)  { abort "Please set mailgun_recipient_domain accordingly" }
 
         # some internal variables that mailgun will use as the app runs
-        _cset(:mailgun_deploy_servers)    { find_servers_for_task( find_task('deploy:update_code') ) }
+        # _cset(:mailgun_deploy_servers)    { find_servers_for_task( find_task('deploy:update_code') ) }
 
-        # set these to nil to not use, or set to path to your custom template
-        _cset :mailgun_text_template, :deploy_text
-        _cset :mailgun_html_template, :deploy_html
-
-        _cset :mailgun_include_servers, false
+        # _cset :mailgun_include_servers, false
 
         # default mailgun email tasks
         desc <<-DESC
@@ -52,6 +49,13 @@ module Capistrano
           mailgun.notify_of_deploy
         end
 
+        on(:load) do
+          capnotify.components.unshift(Capnotify::Component.new(:mailgun_message) do |c|
+            c.header = 'Mailgun Message'
+
+            c.content = fetch(:mailgun_message, nil)
+          end)
+        end
 
 
       end # config.load
@@ -75,9 +79,6 @@ module Capistrano
     # * +mailgun_recipients+
     # * +mailgun_from+
     # * +mailgun_subject+
-    # Requires one or both of the following:
-    # * +mailgun_text_template+
-    # * +mailgun_html_template+
     #
     # See README for explanations of the above variables.
     def notify_of_deploy
@@ -89,13 +90,6 @@ module Capistrano
 
       options[:cc] = fetch(:mailgun_cc) if fetch(:mailgun_cc, nil)
       options[:bcc] = fetch(:mailgun_bcc) if fetch(:mailgun_bcc, nil)
-
-      if fetch(:mailgun_text_template, nil).nil? && fetch(:mailgun_html_template, nil).nil?
-        abort "You must specify one (or both) of mailgun_text_template and mailgun_html_template to use notify_of_deploy"
-      end
-
-      options[:text_template] = fetch(:mailgun_text_template, nil)
-      options[:html_template] = fetch(:mailgun_html_template, nil)
 
       send_email options
     end
@@ -114,48 +108,15 @@ module Capistrano
 
     private
 
-    def default_deploy_text_template_path
-      default_template_path 'default.txt.erb'
-    end
-
-    def default_deploy_html_template_path
-      default_template_path 'default.html.erb'
-    end
-
-    def default_template_path(name)
-      File.join( File.dirname(__FILE__), 'templates', name)
-    end
-
-    def find_template(t)
-      case t
-      when :deploy_text then default_deploy_text_template_path
-      when :deploy_html then default_deploy_html_template_path
-      else
-        abort "Unknown template symbol: #{ t }" if t.is_a?(Symbol)
-        abort "Template not found: #{ t }" unless File.exists?(t)
-        t
-      end
-    end
-
     # apply templates and all that jazz
-    def process_send_email_options(options)
-      text_template = options.delete(:text_template)
-      html_template = options.delete(:html_template)
-
+    # TODO: technically, options should not be a blank hash. technically there should be at least a :to field
+    def process_send_email_options(options={})
       options[:to] = build_recipients(options[:to]) unless options[:to].nil?
       options[:cc] = build_recipients(options[:cc]) unless options[:cc].nil?
       options[:bcc] = build_recipients(options[:bcc]) unless options[:bcc].nil?
 
-      options[:text] = fetch(:capnotify_deployment_notification_text)
-      options[:html] = fetch(:capnotify_deployment_notification_html)
-      # options[:text] = ERB.new( File.open( find_template(text_template) ).read ).result(self.binding) if text_template
-      # options[:html] = ERB.new( File.open( find_template(html_template) ).read ).result(self.binding) if html_template
-
-      # clean up the text template a little
-      # if options[:text]
-        # options[:text].gsub! /^ +/, ''
-        # options[:text].gsub! /\n{3,}/, "\n\n"
-      # end
+      options[:text] = fetch(:capnotify_deployment_notification_text) if fetch(:capnotify_deployment_notification_text_template_path, nil)
+      options[:html] = fetch(:capnotify_deployment_notification_html) if fetch(:capnotify_deployment_notification_html_template_path, nil)
 
       options
     end

@@ -71,53 +71,6 @@ describe Capistrano::Mailgun do
 
   end
 
-  context "#find_template" do
-
-    def find_template(t)
-      mailgun.send(:find_template, t)
-    end
-
-    context "when dealing with a path" do
-
-      it "should return the path if the file exists" do
-        File.stub!(:exists? => true)
-
-        find_template('asdf').should == 'asdf'
-      end
-
-      it "should not raise an error if the file exists" do
-        File.stub!(:exists? => true)
-
-        lambda { find_template('adsf') }.should_not raise_error
-      end
-
-      it "should raise an error if the path doesn't exist" do
-        File.stub!(:exists? => false)
-
-        lambda { find_template('asdf') }.should raise_error
-      end
-
-    end
-
-    context "when dealing with a symbol" do
-
-      it "should return the default_deploy_text_template_path for :deploy_text" do
-        mailgun.should_receive(:default_deploy_text_template_path)
-
-        find_template(:deploy_text)
-      end
-
-      it "should return the default_deploy_html_template_path for :deploy_html" do
-        mailgun.should_receive(:default_deploy_html_template_path)
-
-        find_template(:deploy_html)
-      end
-
-    end
-
-  end
-
-
   context "when ensuring cap variables are defined" do
 
     def should_require(var)
@@ -361,7 +314,10 @@ describe Capistrano::Mailgun do
     end
 
     it "should set text to the rendered text template if text_template is passed" do
-      result = mailgun.send(:process_send_email_options, :text_template => fixture_path('text_body.erb'))
+      config.load do
+        set :capnotify_deployment_notification_text_template_path, fixture_path('text_body.erb')
+      end
+      result = mailgun.send(:process_send_email_options)
 
       result[:text].should include(test_mailgun_domain)
       result[:text].should_not include('<%=')
