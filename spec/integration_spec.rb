@@ -10,6 +10,8 @@ describe "Integration testing for Capistrano::Mailgun" do
     Capistrano::Mailgun.load_into(config)
 
     RestClient.stub(:post)
+
+    config.trigger(:load)
   end
 
   let(:mailgun) { config.mailgun }
@@ -140,7 +142,6 @@ describe "Integration testing for Capistrano::Mailgun" do
           config.set :mailgun_message, '_custom_message_'
 
           RestClient.should_receive(:post) do |url, opts|
-            binding.pry
             opts[:text].should include('_custom_message_')
             opts[:html].should include('_custom_message_')
           end

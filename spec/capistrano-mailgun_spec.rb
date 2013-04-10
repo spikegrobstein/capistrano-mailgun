@@ -14,6 +14,8 @@ describe Capistrano::Mailgun do
     end
 
     RestClient.stub(:post)
+
+    config.trigger(:load)
   end
 
   let(:mailgun) { config.mailgun }
