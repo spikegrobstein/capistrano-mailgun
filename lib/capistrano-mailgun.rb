@@ -98,7 +98,7 @@ module Capistrano
     # Optionally, it will take a +default_domain+ which will automatically be appended to any unqualified recipients (eg: 'spike' => 'spike@example.com')
     def build_recipients(recipients, default_domain=nil)
       [*recipients].map do |r|
-        if r.match /.+?@.+?$/ # the email contains an @ so it's fully-qualified.
+        if r.match(/.+?@.+?$/) # the email contains an @ so it's fully-qualified.
           r
         else
           "#{ r }@#{ default_domain || fetch(:mailgun_recipient_domain) }"
