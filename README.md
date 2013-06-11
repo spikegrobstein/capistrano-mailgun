@@ -6,13 +6,15 @@ Mailgun.org is an excellent, API-driven email provider. So, bust out your nine, 
 easily from inside your Capistrano recipes.
 
 `Capistrano::Mailgun` provides a simple interface for notifying of deploys, exposing your Capistrano
-variables to your ERB template built on top of a more robust public interface to the Mailgun API.
+variables to your ERB template built on top of a more robust public interface to the Mailgun API. It's built on
+top of [Capnotify](https://github.com/spikegrobstein/capnotify), so it's extensible via Capnotify plugins and
+accepts Capnotify configuration options.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'capistrano-mailgun'
+    gem 'capistrano-mailgun', '~> 2.0'
 
 And then execute:
 
@@ -151,25 +153,6 @@ An array of email addresses who should be BCC'd when `mailgun.notify_of_deploy` 
 follow the same rules as the `mailgun_recipients` variable with respect to the handling of unqualified
 eail addresses.
 
-### mailgun_text_template (required for notify_of_deploy)
-
-This is the path to the ERB template that `mailgun.notify_of_deploy` will use to create the text body of
-your email. This is only required if you do not use the `mailgun_html_template` variable. You can
-specify both text and html templates and the emails will contain the proper bodies where the client
-supports it.
-
-The default setting for this is `:deploy_text` which is a built-in template. See "Built-in Templates"
-below for more information.
-
-### mailgun_html_template (required for notify_of_deploy)
-
-This is the path to the ERB template that will be used to generate the HTML body of the email. It is only
-required if you do not specify the `mailgun_text_template` variable. You can specify both text and html
-templates and emails will contain the proper bodies where the client supports it.
-
-The default setting for this is `:deploy_html` which is a built-in template. See "Built-in Templates"
-below for more information.
-
 ### mailgun_recipient_domain
 
 The domain that will be automatically appended to incomplete email addresses in the `mailgun_recipients`.
@@ -217,28 +200,6 @@ or with the built-in `mailgun_notify` task.
 
 See above `Disabling Emails` section for examples.
 
-### mailgun_include_servers
-
-Tnis variable is set to `false` by default. Setting to true will add the list of servers that are included in
-the `deploy:update_code` task, which is any server that got code deployed to it.
-
-This is useful for when you deploy to only a subset of servers using Capistrano's `HOSTS` or `ROLES` environment
-variables in your deploy.
-
-To enable the inclusion of the server list, you can add the following to your deployment configuration:
-
-    set :mailgun_include_servers, true
-
-### github_url
-
-If your project is hosted on Github and you'd like to have links to the Github repository in the deployment
-notifications, set this. It should be in the following format:
-
-    https://github.com/USERNAME/PROJECT
-
-This is used for linking to commits from the log and linking to the Github page for the exact revision that
-was deployed.
-
 ## Capistrano Tasks
 
 ### mailgun_notify
@@ -283,11 +244,6 @@ documentation:
 
 http://documentation.mailgun.net/api-sending.html
 
-This function also takes the following additional options:
-
- * `:text_template` -- a path to an ERB template for the text body of the email.
- * `:html_template` -- a path to an ERB template for the HTML body of the email.
-
 The templates will have access to all of your Capistrano variables and anything else that Capistrano can see
 such as methods and Capistrano plugins (including `Capistrano::Mailgun`).
 
@@ -295,35 +251,6 @@ Of course, you can also pass `:text` and `:html` options for the exact text/html
 will be passed directly to the Mailgun API.
 
 No validation is done from this function, so errors from Mailgun will percolate up to you.
-
-### deployer_username
-
-This is a default capistrano variable that is defined in the gem. It will use the `git config user.name` if `scm` is
-configured as `:git` or use `whoami` if not. This is handy if you want to notify people of which user
-actually did the deployment.
-
-## Built-in Templates
-
-`Capistrano::Mailgun` comes with built-in templates for use with `mailgun.notify_of_deploy`. There are both HTML and Text
-templates which include information such as the sha1 and ref that has been deployed as well as logs of the last
-commits. Use of the Capistrano variable `github_url` will enable links back to the repository and direct links
-to the commits in the log.
-
-These files live inside the gem in the `lib/templates` directory, so feel free to pull them out, copy into
-your project and customize.
-
-By default, `mailgun.notify_of_deploy` sets `mailgun_text_template` to `:default_text` and `mailgun_html_template`
-to `:default_html`, which signals it to use these built-in templates. Overriding those variables with absolute
-paths to your own templates will signal mailgun to use those. Setting either variable to `nil` will prevent
-`mailgun.notify_of_deploy` from using anything for either the text or HTML portion of the email.
-
-## Limitations
-
- * Only supports ERB for templates. This should be changed in a future release.
- * Currently requires that ERB templates are on the filesystem. Future releases may allow for inline templates.
- * Support for VCSs other than `:git` is lacking. `Capistrano::Mailgun` has been built with git and Github in mind.
-   If anyone has interest in adding support for other another version control system, that would be great.
-   Using this with a VCS other than Git may yeild unpredictable results.
 
 ## Contributing
 
@@ -335,10 +262,13 @@ paths to your own templates will signal mailgun to use those. Setting either var
 
 ## Acknowledgements
 
+`Capistrano::Mailgun` is a [Capnotify](https://github.com/spikegrobstein/capnotify) extension. See Capnotify for additional
+configuration options.
+
 `Capistrano::Mailgun` is written by Spike Grobstein and is used in production at [Ticket Evolution](http://www.ticketevolution.com)
 
 `Capistrano::Mailgun` leverages the awesome email sending API of [Mailgun.org](http://mailgun.org). You should definitely check it out.
 
 ## License
 
-`Capistrano::Mailgun` is &copy;2012 Spike Grobstein and licensed under the MIT License. See `LICENSE` file.
+`Capistrano::Mailgun` is &copy;2012-2013 Spike Grobstein and licensed under the MIT License. See `LICENSE` file.

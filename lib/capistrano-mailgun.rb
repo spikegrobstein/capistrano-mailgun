@@ -19,9 +19,7 @@ module Capistrano
           end
         end
 
-        # disable the capnotify splash screen
-        _cset :capnotify_hide_splash, true
-
+        # TODO: This should use capnotify's subject
         _cset(:mailgun_subject) do
           [ "[Deployment]", fetch(:stage, '').to_s.capitalize, fetch(:application, '').capitalize, 'deploy completed'].join(' ').gsub(/\s+/, ' ')
         end
@@ -31,11 +29,6 @@ module Capistrano
         _cset(:mailgun_from)              { abort "Please set mailgun_from to your desired From field" }
         _cset(:mailgun_recipients)        { abort "Please specify mailgun_recipients" }
         _cset(:mailgun_recipient_domain)  { abort "Please set mailgun_recipient_domain accordingly" }
-
-        # some internal variables that mailgun will use as the app runs
-        # _cset(:mailgun_deploy_servers)    { find_servers_for_task( find_task('deploy:update_code') ) }
-
-        # _cset :mailgun_include_servers, false
 
         # default mailgun email tasks
         desc <<-DESC
@@ -63,10 +56,9 @@ module Capistrano
 
     # Simple wrapper for sending an email with a given template
     # Supports all options that the Mailgun API supports. In addition, it also accepts:
-    # * +:text_template+ -- the path to the template for the text body. It will be processed and interpolated and set the +text+ field when doing the API call.
-    # * +:html_template+ -- the path to the template for the html body. It will be processed and interpolated and set the +html+ field when doing the API call.
     #
     # If +mailgun_off+ is set, this function will do absolutely nothing.
+    # TODO: Maybe we should call this +mailgun_disarm+?
     def send_email(options)
       return if exists?(:mailgun_off)
       options = process_send_email_options(options)
