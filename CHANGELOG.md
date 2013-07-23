@@ -1,26 +1,36 @@
+## 2013-07-23 - 2.0.0pre1
+
+ * added support for overriding html/text data in `mailgun#send_email`
+
 ## 2013-01-30 - v1.3.0
+
  * added option to include list of servers deployed to in email notification
  * fixed a bug where requiring `capistrano-mailgun` after you load `deploy.rb` would cause variables to be overwritten with defaults.
  * don't call `mailgun.log_output` twice in html template
  * fixed an issue where, depending on when `mailgun_notify` is called, it may or may not use the correct revisions when building the commit log.
 
 ## 2012-11-?? - v1.2.0
+
  * properly handle failures when running git-log
 
 ## 2012-10-22 - v1.1.0
+
  * default subject now includes stage
  * built-in templates
  * support for custom messages
 
 ## 2012-10-15 - v1.0.2
+
  * Minor release
  * documentation changes
 
 ## 2012-10-15 - v1.0.1
+
  * Minor release
  * documentation changes
 
 ## 2012-10-15 - v1.0.0
+
  * Version 1.0.0!
  * Proper definitions of dependencies
  * Proper documentation
