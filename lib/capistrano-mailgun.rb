@@ -107,8 +107,8 @@ module Capistrano
       options[:cc] = build_recipients(options[:cc]) unless options[:cc].nil?
       options[:bcc] = build_recipients(options[:bcc]) unless options[:bcc].nil?
 
-      options[:text] = fetch(:capnotify_deployment_notification_text) if fetch(:capnotify_deployment_notification_text_template_path, nil)
-      options[:html] = fetch(:capnotify_deployment_notification_html) if fetch(:capnotify_deployment_notification_html_template_path, nil)
+      options[:text] ||= fetch(:capnotify_deployment_notification_text) if fetch(:capnotify_deployment_notification_text_template_path, nil)
+      options[:html] ||= fetch(:capnotify_deployment_notification_html) if fetch(:capnotify_deployment_notification_html_template_path, nil)
 
       options
     end
